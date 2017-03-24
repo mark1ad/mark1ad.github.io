@@ -1,3 +1,21 @@
 header {
   text-align: center;
 }
+
+footer {
+  text-align: center;
+}
+
+#board {
+  width: 75%;
+  display: inline-block;
+  border: 2px solid black;
+  padding: 5px;
+}
+
+#info {
+  display: inline-block;
+  width: 15%;
+  border: 2px solid darkBlue;
+  padding: 5px;
+}
