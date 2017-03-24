@@ -19,3 +19,15 @@ footer {
   border: 2px solid darkBlue;
   padding: 5px;
 }
+
+.board-square {
+  display: inline-block;
+  border: 2px solid orange;
+  height:10px;
+  width: 10%;
+  background-color: darkRed;
+}
+
+.playable-square {
+  background-color: white;
+}
