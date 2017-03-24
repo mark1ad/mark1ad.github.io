@@ -2,6 +2,7 @@ $(function() {
   console.log('checkers connected');
 
   controller.makeBoard();
+  controller.placePieces();
 })
 
 // model - where the data lives
@@ -17,7 +18,7 @@ var model = {
   board: [],
 
   makeRow: function(row, initialValue) {
-    console.log('model.makeRow');
+    console.log('model.makeRow()');
 
     this.board[row] = [];
     this.board[row].length = 10;
@@ -40,6 +41,23 @@ var model = {
 
     // make last row, which is an occupied edge row
     this.makeRow(9, this.constR);
+  },
+
+  placePiece: function(color, rowIndex, colIndex) {
+    console.log('model.placePiece()');
+
+    // increment indexes because of edge rows
+    rowIndex++;
+    colIndex++;
+    this.board[rowIndex][colIndex] = color;
+  },
+
+  // TODO: this function is for debugging, remove when done.
+  displayBoard: function() {
+
+    for (var i = 0; i < this.board.length; i++) {
+      console.log(this.board[i]);
+    }
   }
 }
 
@@ -50,7 +68,34 @@ var controller = {
 
     view.makeBoard();
     model.initialize();
-  }
+  },
+
+  placePieces: function() {
+    console.log('controler.placePieces()');
+
+    // place black pieces
+    for (var row = 0; row < 3; row++) {
+      for(var col = 0; col < 8; col++) {
+        if ((row % 2  + col) % 2 !== 0) {
+          view.placePiece('B', row, col);
+          model.placePiece('B', row, col);
+        }
+      }
+    }
+
+    // place red pieces
+    for (var row = 5; row < 8; row++) {
+      for (var col = 0; col < 8; col++) {
+        if ((row % 2 + col) % 2 !== 0) {
+          view.placePiece('R', row, col);
+          model.placePiece('B', row, col);
+        }
+      }
+    }
+
+    model.displayBoard();
+
+  },
 }
 
 // view - where the display lives
@@ -68,12 +113,20 @@ var view = {
         var $square = $('<div>').addClass('board-square');
 
         // set class for playable squares
-        if (((rowNum % 2) + colNum) % 2 === 0) {
+        if (((rowNum + 1 % 2) + colNum) % 2 === 0) {
           $square.addClass('playable-square')
         }
 
         $row.append($square);
       }
     }
-  }
+  },
+
+  placePiece: function(color, rowIndex, colIndex) {
+    console.log('view.placePiece()');
+
+    var $row = $('#board').children().eq(rowIndex);
+    var $square = $row.children().eq(colIndex);
+    $square.text(color);
+  },
 }

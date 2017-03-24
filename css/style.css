@@ -22,12 +22,13 @@ footer {
 
 .board-square {
   display: inline-block;
-  border: 2px solid orange;
-  height:10px;
+  border: 2px solid darkRed;
+  height: 50px;
   width: 10%;
-  background-color: darkRed;
+  background-color: white;
 }
 
 .playable-square {
-  background-color: white;
+  background-color: darkRed;
+  color: white;
 }
