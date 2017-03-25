@@ -53,7 +53,7 @@ var model = {
   },
 
   // TODO: this function is for debugging, remove when done.
-  displayBoard: function() {
+  printBoard: function() {
 
     for (var i = 0; i < this.board.length; i++) {
       console.log(this.board[i]);
@@ -92,9 +92,6 @@ var controller = {
         }
       }
     }
-
-    model.displayBoard();
-
   },
 }
 

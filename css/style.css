@@ -32,3 +32,8 @@ footer {
   background-color: darkRed;
   color: white;
 }
+
+/* TODO: do something better than using paragraphs */
+p {
+  border: 1px solid black;
+}
