@@ -13,7 +13,7 @@ The board in the model object is 10x10 instead of 8x8. The outer row will
 marked as occupied. This eliminates the need for special processing of edge
 pieces.
 
-The squares in the html board will have x and y attributes so we don't need
+The squares in the html board will have row and column attributes so we don't need
 to work to figure out which square we're on.
 
 To Do: using a mix of x,y and col,row. Need to clean up to use one or the other.

@@ -132,6 +132,11 @@ var controller = {
 
   takeTurn: function(player) {
     console.log('takeTurn() ' + player);
+
+    // show whose turn it is
+    var str = "It's " + player + "'s turn.";
+    view.showTurn(str);
+
     // add handlers to playable pieces
     var validSquares = model.getValidPieces(player);
     for (var i = 0; i < validSquares.length; i++) {
@@ -148,7 +153,11 @@ var controller = {
 }
 
 // view - where the display lives
+
+var beginnerMode = true; // only for use in view object. Do not use anywhere
+                        // else
 var view = {
+
   // makes the board in the html
   makeBoard: function() {
     console.log('view.makeBoard()');
@@ -214,16 +223,26 @@ var view = {
   },
 
   squareSelectedHandler: function() {
-    console.log('squareSelectedHandler()');
+    console.log('view.squareSelectedHandler()');
 
     var $row = $(this).attr('row');
     var $column = $(this).attr('column');
 
-    controller.squareSelected($row, $column);
-  },
+    // remove handlers and highlight class
+    var $rows = $('#board').children();
+    for (var i = 0; i < $rows.length; i++) {
+      var $curRow = $rows.eq(i);
+      $curRow.children().removeClass('highlight');
+      $curRow.children().off('click', this.squareSelectedHandler);
+    }
 
+    controller.squareSelected($row, $column);
+    },
+
+  // add click handler to square
+  // if in beginner mode highlight square
   addHandlerToSquare: function(row, column) {
-    console.log('addHandlerToSquare() column ' + column + ' row ' + row);
+    console.log('view.addHandlerToSquare() column ' + column + ' row ' + row);
 
     // get row
     var $rowSelected = $('div#board > div').eq(row);
@@ -231,7 +250,13 @@ var view = {
     // get square
     var $square = $rowSelected.children().eq(column);
 
+    // highlight square, add highlight class
+    if (beginnerMode) {
+      $square.addClass('highlight');
+    }
+
     // add handler
     $square.on('click', this.squareSelectedHandler);
-  }
+  },
+
 }
