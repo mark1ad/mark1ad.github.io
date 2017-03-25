@@ -6,6 +6,9 @@ $(function() {
 
   view.showNumPieces(12, 12);
   view.showScore(0, 0);
+
+  // view.addHandlerToSquare(0, 0);
+  view.addHandlerToSquare(0, 1);
 });
 
 const black = 'Black';
@@ -142,7 +145,7 @@ var view = {
     $('#turn').text(turn);
   },
 
-  showNumPieces(red, black) {
+  showNumPieces: function(red, black) {
     console.log('showNumPieces() red ' + red + ' black ' + black);
 
     str = "Pieces left:<br/>Red: " + red
@@ -150,11 +153,28 @@ var view = {
     $('#pieces-left').html(str);
   },
 
-  showScore(red, black) {
+  showScore: function(red, black) {
     console.log('showScore() red ' + red + ' black ' + black);
 
     var str = "Score:<br/>Red: " + red
       + "<br/>Black: " + black;
     $('#score').html(str);
+  },
+
+  squareSelectedHandler: function() {
+    console.log('squareSelectedHandler()');
+  },
+
+  addHandlerToSquare: function(x, y) {
+    console.log('addHandlerToSquare() x ' + x + ' y ' + y);
+
+    // get row
+    var $row = $('div#board > div').eq(y);
+
+    // get square
+    var $square = $row.children().eq(x);
+
+    // add handler
+    $square.on('click', this.squareSelectedHandler);
   }
 }
