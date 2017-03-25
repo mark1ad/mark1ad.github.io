@@ -3,18 +3,19 @@ $(function() {
 
   controller.makeBoard();
   controller.placePieces();
+
+  view.showNumPieces(12, 12);
+  view.showScore(0, 0);
 });
+
+const black = 'Black';
+const red = 'Red';
+const blank = '';
 
 // model - where the data lives
 var model = {
   // board is 10x10. The squares on the edges are dummy squares to make
   // life easier in other operations
-  // R - square occupied by red
-  // B - square occupied by black
-  // empty string - square unoccupied
-  constR: 'R',
-  constB: 'B',
-  constEmpty: '',
   board: [],
 
   makeRow: function(row, initialValue) {
@@ -22,25 +23,26 @@ var model = {
 
     this.board[row] = [];
     this.board[row].length = 10;
-    this.board[row].fill(initialValue, 0, 10);
+    this.board[row].fill(initialValue, blank, 10);
   },
 
   initialize: function() {
     console.log('model.initialize()');
 
     // make edge row and fill it with 'R'
-    this.makeRow(0, this.constR);
+    this.makeRow(0, red);
+
 
     // make inside rows
     for (var row = 1; row < 9; row++) {
-      this.makeRow( row, this.constEmpty);
+      this.makeRow( row, blank);
       // make edges occupied
-      this.board[row][0] = this.constR;
-      this.board[row][9] = this.constR;
+      this.board[row][0] = red;
+      this.board[row][9] = red;
     }
 
     // make last row, which is an occupied edge row
-    this.makeRow(9, this.constR);
+    this.makeRow(9, red);
   },
 
   placePiece: function(color, rowIndex, colIndex) {
@@ -77,8 +79,8 @@ var controller = {
     for (var row = 0; row < 3; row++) {
       for(var col = 0; col < 8; col++) {
         if ((row % 2  + col) % 2 !== 0) {
-          view.placePiece('B', row, col);
-          model.placePiece('B', row, col);
+          view.placePiece(black, row, col);
+          model.placePiece(black, row, col);
         }
       }
     }
@@ -87,8 +89,8 @@ var controller = {
     for (var row = 5; row < 8; row++) {
       for (var col = 0; col < 8; col++) {
         if ((row % 2 + col) % 2 !== 0) {
-          view.placePiece('R', row, col);
-          model.placePiece('B', row, col);
+          view.placePiece(red, row, col);
+          model.placePiece(red, row, col);
         }
       }
     }
@@ -133,4 +135,26 @@ var view = {
     var str = "Winner: " + winner + "!";
     $('#winner').text(str);
   },
+
+  showTurn: function(turn) {
+    console.log('showTurn() ' + turn);
+
+    $('#turn').text(turn);
+  },
+
+  showNumPieces(red, black) {
+    console.log('showNumPieces() red ' + red + ' black ' + black);
+
+    str = "Pieces left:<br/>Red: " + red
+      + "<br/>Black: " + black;
+    $('#pieces-left').html(str);
+  },
+
+  showScore(red, black) {
+    console.log('showScore() red ' + red + ' black ' + black);
+
+    var str = "Score:<br/>Red: " + red
+      + "<br/>Black: " + black;
+    $('#score').html(str);
+  }
 }
