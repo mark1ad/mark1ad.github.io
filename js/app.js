@@ -3,7 +3,7 @@ $(function() {
 
   controller.makeBoard();
   controller.placePieces();
-})
+});
 
 // model - where the data lives
 var model = {
@@ -125,5 +125,12 @@ var view = {
     var $row = $('#board').children().eq(rowIndex);
     var $square = $row.children().eq(colIndex);
     $square.text(color);
+  },
+
+  showWinner: function(winner) {
+    console.log('view.showWinner()');
+
+    var str = "Winner: " + winner + "!";
+    $('#winner').text(str);
   },
 }
