@@ -1,3 +1,14 @@
 # mark1ad.github.io
 
-1. Each row of the board will be in its own div to make layout easier.
+This project is using MVC. The model object contains all of the data. The view
+object will  do all the changes to the html. The controller object is the brains
+of the operation.
+
+Each row of the board will is in its own div to make layout easier.
+
+The model and controller objects are pure vanilla javascript.
+The view object uses vanilla javascript and jQuery.
+
+The board in the model object is 10x10 instead of 8x8. The outer row will
+marked as occupied. This eliminates the need for special processing of edge
+pieces.
