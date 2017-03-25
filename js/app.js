@@ -7,8 +7,12 @@ $(function() {
   view.showNumPieces(12, 12);
   view.showScore(0, 0);
 
-  // view.addHandlerToSquare(0, 0);
-  view.addHandlerToSquare(0, 1);
+  controller.takeTurn(red);
+
+  // var pieces = model.getValidPieces(red);
+  // for (var i = 0; i < pieces.length; i++) {
+  //   console.log('piece x ' + pieces[i][0] + ' y ' + pieces[i][1]);
+  // }
 });
 
 const black = 'Black';
@@ -17,6 +21,7 @@ const blank = '';
 
 // model - where the data lives
 var model = {
+  outOfPlay: 'x', // marks a square that is not playable
   // board is 10x10. The squares on the edges are dummy squares to make
   // life easier in other operations
   board: [],
@@ -33,19 +38,19 @@ var model = {
     console.log('model.initialize()');
 
     // make edge row and fill it with 'R'
-    this.makeRow(0, red);
+    this.makeRow(0, this.outOfPlay);
 
 
     // make inside rows
     for (var row = 1; row < 9; row++) {
       this.makeRow( row, blank);
       // make edges occupied
-      this.board[row][0] = red;
-      this.board[row][9] = red;
+      this.board[row][0] = this.outOfPlay;
+      this.board[row][9] = this.outOfPlay;
     }
 
     // make last row, which is an occupied edge row
-    this.makeRow(9, red);
+    this.makeRow(9, this.outOfPlay);
   },
 
   placePiece: function(color, rowIndex, colIndex) {
@@ -63,11 +68,37 @@ var model = {
     for (var i = 0; i < this.board.length; i++) {
       console.log(this.board[i]);
     }
+  },
+
+  // getValidPieces - returns an array of arrays. Inner arrays are the
+  // coordinates of pieces that can be moved. [col, row]
+  getValidPieces: function(player){
+    // get direction pieces are moving. Red moves from 8 towards 0 so direction
+    // is negative. Black is the opposite.
+    var direction = player === red ? -1 : 1;
+
+    var pieces = [];
+
+    for (var row = 1; row <= 8; row++) {
+      for (var col = 1; col <= 8; col++ ) {
+        if (this.board[row][col] === player) {
+          if (this.board[row + direction][col - 1] === blank
+            || this.board[row + direction][col + 1] === blank) {
+              // piece can be played
+              pieces.push( [col - 1, row - 1]);
+            }
+          }
+        }
+    }
+
+    return pieces;
   }
 }
 
 // Controller - where the brains live
 var controller = {
+  currentPlayer: red,
+
   makeBoard: function() {
     console.log('controller.makeBoard()');
 
@@ -98,6 +129,22 @@ var controller = {
       }
     }
   },
+
+  takeTurn: function(player) {
+    console.log('takeTurn() ' + player);
+    // add handlers to playable pieces
+    var validSquares = model.getValidPieces(player);
+    for (var i = 0; i < validSquares.length; i++) {
+      view.addHandlerToSquare(validSquares[i][1], validSquares[i][0]);
+    }
+  },
+
+  squareSelected: function(row,  column) {
+    console.log('squareSelected() row '  + row + ' column ' + column);
+
+    this.currentPlayer = this.currentPlayer === red ? black : red;
+    this.takeTurn( this.currentPlayer);
+  }
 }
 
 // view - where the display lives
@@ -110,6 +157,7 @@ var view = {
       // make a row
       $row = $('<div>');
       $('#board').append($row);
+
       for (var colNum = 0; colNum < 8; colNum++) {
         // make a square
         var $square = $('<div>').addClass('board-square');
@@ -118,6 +166,10 @@ var view = {
         if (((rowNum + 1 % 2) + colNum) % 2 === 0) {
           $square.addClass('playable-square')
         }
+
+        // set x and y attributes on square
+        $square.attr('column', colNum);
+        $square.attr('row', rowNum);
 
         $row.append($square);
       }
@@ -163,16 +215,21 @@ var view = {
 
   squareSelectedHandler: function() {
     console.log('squareSelectedHandler()');
+
+    var $row = $(this).attr('row');
+    var $column = $(this).attr('column');
+
+    controller.squareSelected($row, $column);
   },
 
-  addHandlerToSquare: function(x, y) {
-    console.log('addHandlerToSquare() x ' + x + ' y ' + y);
+  addHandlerToSquare: function(row, column) {
+    console.log('addHandlerToSquare() column ' + column + ' row ' + row);
 
     // get row
-    var $row = $('div#board > div').eq(y);
+    var $rowSelected = $('div#board > div').eq(row);
 
     // get square
-    var $square = $row.children().eq(x);
+    var $square = $rowSelected.children().eq(column);
 
     // add handler
     $square.on('click', this.squareSelectedHandler);
