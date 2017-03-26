@@ -208,7 +208,7 @@ var controller = {
     // add handlers to playable pieces
     var validSquares = model.getValidPieces(player);
     for (var i = 0; i < validSquares.length; i++) {
-      view.addHandlerToSquare(validSquares[i][1], validSquares[i][0]);
+      view.addSelectPieceHandler(validSquares[i][1], validSquares[i][0]);
     }
   },
 
@@ -219,7 +219,11 @@ var controller = {
     console.log('pieceSelected() row '  + row + ' column ' + column);
 
     model.setSelectedPiece(row, column);
-    var $moveToSquares = model.getMoveToSquares(this.currentPlayer);
+
+    var moveToSquares = model.getMoveToSquares(this.currentPlayer);
+    for (var i = 0; i < moveToSquares.length; i++) {
+      view.addSelectedSquareHandler(moveToSquares[i][0], moveToSquares[i][1]);
+    }
 
     // this.currentPlayer = this.currentPlayer === red ? black : red;
     // this.takeTurn( this.currentPlayer);
@@ -314,10 +318,9 @@ var view = {
   // Event handlers
   //*******************************
 
-  // add click handler to square
-  // if in beginner mode highlight square
-  addHandlerToSquare: function(row, column) {
-    console.log('view.addHandlerToSquare() column ' + column + ' row ' + row);
+  // add handler to square
+  addHandler: function(handler, row, column) {
+    console.log('view.addHandler()');
 
     // get row
     var $rowSelected = $('div#board > div').eq(row);
@@ -331,7 +334,20 @@ var view = {
     }
 
     // add handler
-    $square.on('click', this.pieceSelectedHandler);
+    $square.on('click', handler);
+  },
+
+  // add click handler to square
+  // if in beginner mode highlight square
+  addSelectPieceHandler: function(row, column) {
+    console.log('view.addSelectPieceHandler() column ' + column + ' row ' + row);
+
+    this.addHandler(this.pieceSelectedHandler, row, column);
+  },
+
+  addSelectedSquareHandler: function(row, column) {
+    console.log('view.addSelectedSquareHandler( ' + row + ', ' + column + ')');
+    this.addHandler(this.squareSelectedHandler, row, column);
   },
 
   // pieceSelectedHandler - called when a piece has been selected.
@@ -353,5 +369,14 @@ var view = {
 
     controller.pieceSelected($row, $column);
   },
+
+  squareSelectedHandler: function() {
+    console.log('view.squareSelectedHandler()');
+
+    var $row = parseInt( $(this).attr('row'));
+    var $column = parseInt( $(this).attr('column'))
+
+    console.log($row + $column);
+  }
 
 }
