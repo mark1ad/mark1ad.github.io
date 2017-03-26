@@ -337,6 +337,16 @@ var view = {
     $square.on('click', handler);
   },
 
+  // remove handlers
+  removeAllHandlers: function(handler) {
+    var $rows = $('#board').children();
+    for (var i = 0; i < $rows.length; i++) {
+      var $curRow = $rows.eq(i);
+      $curRow.children().removeClass('highlight');
+      $curRow.children().off('click', this.pieceSelectedHandler);
+    }
+  },
+
   // add click handler to square
   // if in beginner mode highlight square
   addSelectPieceHandler: function(row, column) {
@@ -358,15 +368,7 @@ var view = {
 
     var $row = parseInt( $(this).attr('row'));
     var $column = parseInt( $(this).attr('column'));
-
-    // remove handlers and highlight class
-    var $rows = $('#board').children();
-    for (var i = 0; i < $rows.length; i++) {
-      var $curRow = $rows.eq(i);
-      $curRow.children().removeClass('highlight');
-      $curRow.children().off('click', this.pieceSelectedHandler);
-    }
-
+    view.removeAllHandlers(this.pieceSelectedHandler);
     controller.pieceSelected($row, $column);
   },
 
@@ -375,8 +377,7 @@ var view = {
 
     var $row = parseInt( $(this).attr('row'));
     var $column = parseInt( $(this).attr('column'))
-
-    console.log($row + $column);
+    view.removeAllHandlers(this.squareSelectedHandler);
   }
 
 }
