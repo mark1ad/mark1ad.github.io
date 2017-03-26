@@ -77,6 +77,7 @@ var model = {
   },
 
   setSelectedPiece: function(row, column) {
+    console.log('model.setSelectedPiece(' + row + ', ' + column + ')');
     this.selectedPiece = [ row + 1, column + 1 ];
   },
 
@@ -127,7 +128,7 @@ var model = {
   // getMoveToSquares - returns an array or arrays. Inner arrays are the
   // coordinates of sqaures that a piece can move to. [row, column]
   getMoveToSquares: function(player) {
-    console.log('getMoveToSquares() ' + player);
+    console.log('model.getMoveToSquares() ' + player);
 
     var squares = [];
     var direction = player === red ? -1 : 1;
@@ -214,7 +215,7 @@ var controller = {
   // takeTurn - called at start of a players turn. Updates info area.
   // Add handlers to playable pieces
   takeTurn: function(player) {
-    console.log('takeTurn() ' + player);
+    console.log('>>>>>> takeTurn() ' + player);
 
     // show whose turn it is
     var str = "It's " + player + "'s turn.";
@@ -231,7 +232,7 @@ var controller = {
   // Tells model which piece has been selected. Adds handlers to squares
   // that piece can move to.
   pieceSelected: function(row,  column) {
-    console.log('pieceSelected() row '  + row + ' column ' + column);
+    console.log('>>>>>>>controller.pieceSelected() row '  + row + ' column ' + column);
 
     model.setSelectedPiece(row, column);
 
@@ -240,14 +241,12 @@ var controller = {
       view.addSelectedSquareHandler(moveToSquares[i][0], moveToSquares[i][1]);
     }
 
-    // this.currentPlayer = this.currentPlayer === red ? black : red;
-    // this.takeTurn( this.currentPlayer);
   },
 
   // squareSelected - handler for when a player selects a square to move to.
   // Tells model where to move piece to. Starts opponents turn.
   squareSelected: function(row, column) {
-    console.log('controller.squareSelected(' + row + ', ' + column + ')');
+    console.log('>>>>>>> controller.squareSelected(' + row + ', ' + column + ')');
 
 
     // move piece in view
@@ -257,6 +256,9 @@ var controller = {
 
     // move piece in model
     model.movePiece(row, column);
+
+    this.currentPlayer = this.currentPlayer === red ? black : red;
+    this.takeTurn( this.currentPlayer);
   }
 }
 
@@ -304,7 +306,7 @@ var view = {
 
   // placePiece - places a piece on the board
   placePiece: function(color, rowIndex, colIndex) {
-    console.log('view.placePiece()');
+    console.log('view.placePiece( ' + color + ', ' + rowIndex + ', ' + colIndex + ')');
 
     var $row = $('#board').children().eq(rowIndex);
     var $square = $row.children().eq(colIndex);
@@ -357,7 +359,7 @@ var view = {
 
   // add handler to square
   addHandler: function(handler, row, column) {
-    console.log('view.addHandler()');
+    console.log('view.addHandler( ' + handler.name + ', ' + row + ', ' + column + ')');
 
     // get row
     var $rowSelected = $('div#board > div').eq(row);
@@ -376,18 +378,21 @@ var view = {
 
   // remove handlers
   removeAllHandlers: function(handler) {
+    console.log('view.removeAllHandlers()');
     var $rows = $('#board').children();
     for (var i = 0; i < $rows.length; i++) {
       var $curRow = $rows.eq(i);
       $curRow.children().removeClass('highlight');
+      // TODO: should need to remove one or the other handler
       $curRow.children().off('click', this.pieceSelectedHandler);
+      $curRow.children().off('click', this.squareSelectedHandler)
     }
   },
 
   // add click handler to square
   // if in beginner mode highlight square
   addSelectPieceHandler: function(row, column) {
-    console.log('view.addSelectPieceHandler() column ' + column + ' row ' + row);
+    console.log('view.addSelectPieceHandler() row ' + row + ' column ' + column);
 
     this.addHandler(this.pieceSelectedHandler, row, column);
   },
