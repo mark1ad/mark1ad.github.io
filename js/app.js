@@ -8,11 +8,6 @@ $(function() {
   view.showScore(0, 0);
 
   controller.takeTurn(red);
-
-  // var pieces = model.getValidPieces(red);
-  // for (var i = 0; i < pieces.length; i++) {
-  //   console.log('piece x ' + pieces[i][0] + ' y ' + pieces[i][1]);
-  // }
 });
 
 const black = 'Black';
@@ -176,7 +171,7 @@ var view = {
           $square.addClass('playable-square')
         }
 
-        // set x and y attributes on square
+        // set row and column attributes on square
         $square.attr('column', colNum);
         $square.attr('row', rowNum);
 
@@ -237,7 +232,7 @@ var view = {
     }
 
     controller.squareSelected($row, $column);
-    },
+  },
 
   // add click handler to square
   // if in beginner mode highlight square
