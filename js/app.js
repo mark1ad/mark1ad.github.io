@@ -10,11 +10,19 @@ $(function() {
   controller.takeTurn(red);
 });
 
+//***************************************
+//* Constants
+//***************************************
 const black = 'Black';
 const red = 'Red';
 const blank = '';
 
+//***************************************
 // model - where the data lives
+//
+// The playable sqaures are indexed starting at 1. From the outside
+// it appears to be 0 based.
+//****************************************
 var model = {
   outOfPlay: 'x', // marks a square that is not playable
   // board is 10x10. The squares on the edges are dummy squares to make
@@ -22,6 +30,12 @@ var model = {
   board: [],
   selectedPiece: [],
 
+  //***************************************
+  // Set up data objects - used once after page first loads
+  //***************************************
+
+  // makeRow - creates an array to store data for
+  // one row of the board
   makeRow: function(row, initialValue) {
     console.log('model.makeRow()');
 
@@ -30,6 +44,7 @@ var model = {
     this.board[row].fill(initialValue, blank, 10);
   },
 
+  // initialize - creates the array to store state of the board in
   initialize: function() {
     console.log('model.initialize()');
 
@@ -49,6 +64,9 @@ var model = {
     this.makeRow(9, this.outOfPlay);
   },
 
+  //*****************************
+  // Update game state
+  //******************************
   placePiece: function(color, rowIndex, colIndex) {
     console.log('model.placePiece()');
 
@@ -58,13 +76,14 @@ var model = {
     this.board[rowIndex][colIndex] = color;
   },
 
-  // TODO: this function is for debugging, remove when done.
-  printBoard: function() {
-
-    for (var i = 0; i < this.board.length; i++) {
-      console.log(this.board[i]);
-    }
+  setSelectedPiece: function(row, column) {
+    this.selectedPiece = [ row + 1, column + 1 ];
   },
+
+
+  //**********************************
+  // Get playable squares/pieces
+  //**********************************
 
   // getValidPieces - returns an array of arrays. Inner arrays are the
   // coordinates of pieces that can be moved. [col, row]
@@ -90,10 +109,8 @@ var model = {
     return pieces;
   },
 
-  setSelectedPiece: function(row, column) {
-    this.selectedPiece = [ row + 1, column + 1 ];
-  },
-
+  // getMoveToSquares - returns an array or arrays. Inner arrays are the
+  // coordinates of sqaures that a piece can move to. [row, column]
   getMoveToSquares: function(player) {
     console.log('getMoveToSquares() ' + player);
 
@@ -115,13 +132,34 @@ var model = {
     }
 
     return squares;
-  }
+  },
+
+
+  //***********************************
+  // debug methods
+  //**********************************
+  // TODO: this function is for debugging, remove when done.
+  printBoard: function() {
+
+    for (var i = 0; i < this.board.length; i++) {
+      console.log(this.board[i]);
+    }
+  },
+
+
 }
 
+//***************************************
 // Controller - where the brains live
+//***************************************
 var controller = {
   currentPlayer: red,
 
+  //******************************
+  // initialize game after page loads
+  //******************************
+
+  // makeboard - initialize data and view
   makeBoard: function() {
     console.log('controller.makeBoard()');
 
@@ -129,6 +167,7 @@ var controller = {
     model.initialize();
   },
 
+  //  placePieces - place pieces for start of game
   placePieces: function() {
     console.log('controler.placePieces()');
 
@@ -153,6 +192,12 @@ var controller = {
     }
   },
 
+  //**********************************
+  // Start playing
+  //***********************************
+
+  // takeTurn - called at start of a players turn. Updates info area.
+  // Add handlers to playable pieces
   takeTurn: function(player) {
     console.log('takeTurn() ' + player);
 
@@ -167,6 +212,9 @@ var controller = {
     }
   },
 
+  // pieceSelected - handler for when a player selects a piece.
+  // Tells model which piece has been selected. Adds handlers to squares
+  // that piece can move to.
   pieceSelected: function(row,  column) {
     console.log('pieceSelected() row '  + row + ' column ' + column);
 
@@ -178,11 +226,16 @@ var controller = {
   }
 }
 
+//***************************************
 // view - where the display lives
+//***************************************
 
 var beginnerMode = true; // only for use in view object. Do not use anywhere
                         // else
 var view = {
+  //******************************
+  // initialize board elements after page loads
+  //******************************
 
   // makes the board in the html
   makeBoard: function() {
@@ -211,6 +264,11 @@ var view = {
     }
   },
 
+  //*****************************
+  //
+  //****************************
+
+  // placePiece - places a piece on the board
   placePiece: function(color, rowIndex, colIndex) {
     console.log('view.placePiece()');
 
@@ -218,6 +276,10 @@ var view = {
     var $square = $row.children().eq(colIndex);
     $square.text(color);
   },
+
+  //****************************
+  // Information area methods
+  //****************************
 
   showWinner: function(winner) {
     console.log('view.showWinner()');
@@ -248,22 +310,9 @@ var view = {
     $('#score').html(str);
   },
 
-  pieceSelectedHandler: function() {
-    console.log('view.pieceSelectedHandler()');
-
-    var $row = parseInt( $(this).attr('row'));
-    var $column = parseInt( $(this).attr('column'));
-
-    // remove handlers and highlight class
-    var $rows = $('#board').children();
-    for (var i = 0; i < $rows.length; i++) {
-      var $curRow = $rows.eq(i);
-      $curRow.children().removeClass('highlight');
-      $curRow.children().off('click', this.pieceSelectedHandler);
-    }
-
-    controller.pieceSelected($row, $column);
-  },
+  //*******************************
+  // Event handlers
+  //*******************************
 
   // add click handler to square
   // if in beginner mode highlight square
@@ -283,6 +332,26 @@ var view = {
 
     // add handler
     $square.on('click', this.pieceSelectedHandler);
+  },
+
+  // pieceSelectedHandler - called when a piece has been selected.
+  // Removes handlers from all squares. Tells controller which piece was
+  // selected
+  pieceSelectedHandler: function() {
+    console.log('view.pieceSelectedHandler()');
+
+    var $row = parseInt( $(this).attr('row'));
+    var $column = parseInt( $(this).attr('column'));
+
+    // remove handlers and highlight class
+    var $rows = $('#board').children();
+    for (var i = 0; i < $rows.length; i++) {
+      var $curRow = $rows.eq(i);
+      $curRow.children().removeClass('highlight');
+      $curRow.children().off('click', this.pieceSelectedHandler);
+    }
+
+    controller.pieceSelected($row, $column);
   },
 
 }
