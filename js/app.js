@@ -80,6 +80,21 @@ var model = {
     this.selectedPiece = [ row + 1, column + 1 ];
   },
 
+  getSelectedPiece: function() {
+    return [ this.selectedPiece[0] - 1, this.selectedPiece[1] - 1];
+  },
+
+  movePiece: function(row, column) {
+    console.log('model.movePiece(' + row + ', ' + column + ')');
+    row++;
+    column++;
+
+    var player = this.board[this.selectedPiece[0]][this.selectedPiece[1]];
+    this.board[this.selectedPiece[0]][this.selectedPiece[1]] = blank;
+    this.board[row][column] = player;
+
+    this.selectedPiece = [];
+  },
 
   //**********************************
   // Get playable squares/pieces
@@ -227,6 +242,21 @@ var controller = {
 
     // this.currentPlayer = this.currentPlayer === red ? black : red;
     // this.takeTurn( this.currentPlayer);
+  },
+
+  // squareSelected - handler for when a player selects a square to move to.
+  // Tells model where to move piece to. Starts opponents turn.
+  squareSelected: function(row, column) {
+    console.log('controller.squareSelected(' + row + ', ' + column + ')');
+
+
+    // move piece in view
+    var oldPosition = model.getSelectedPiece();
+    view.removePiece( oldPosition[0], oldPosition[1]);
+    view.placePiece(this.currentPlayer, row, column);
+
+    // move piece in model
+    model.movePiece(row, column);
   }
 }
 
@@ -279,6 +309,13 @@ var view = {
     var $row = $('#board').children().eq(rowIndex);
     var $square = $row.children().eq(colIndex);
     $square.text(color);
+  },
+
+  removePiece: function(rowIndex, colIndex) {
+    console.log('view.removePiece(' + rowIndex + ', ' + colIndex + ')');
+    var $row = $('#board').children().eq(rowIndex);
+    var $square = $row.children().eq(colIndex);
+    $square.text('');
   },
 
   //****************************
@@ -372,12 +409,16 @@ var view = {
     controller.pieceSelected($row, $column);
   },
 
+  // squareSelectedHandler - called when a square has been selected.
+  // Removes handlers from all squares. Tells controller which square was
+  // selected
   squareSelectedHandler: function() {
     console.log('view.squareSelectedHandler()');
 
     var $row = parseInt( $(this).attr('row'));
     var $column = parseInt( $(this).attr('column'))
     view.removeAllHandlers(this.squareSelectedHandler);
-  }
+    controller.squareSelected($row, $column);
+  },
 
 }
