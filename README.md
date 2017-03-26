@@ -1,8 +1,8 @@
 # mark1ad.github.io
 
-This project is using MVC. The model object contains all of the data. The view
-object will  do all the changes to the html. The controller object is the brains
-of the operation.
+This project is using MVC. The model object contains all of the data and the
+state of the game. The view object will  do all the changes to the html.
+The controller object is the brains of the operation.
 
 Each row of the board is in its own div to make layout easier.
 

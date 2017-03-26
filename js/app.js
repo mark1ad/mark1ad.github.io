@@ -20,6 +20,7 @@ var model = {
   // board is 10x10. The squares on the edges are dummy squares to make
   // life easier in other operations
   board: [],
+  selectedPiece: [],
 
   makeRow: function(row, initialValue) {
     console.log('model.makeRow()');
@@ -87,6 +88,33 @@ var model = {
     }
 
     return pieces;
+  },
+
+  setSelectedPiece: function(row, column) {
+    this.selectedPiece = [ row + 1, column + 1 ];
+  },
+
+  getMoveToSquares: function(player) {
+    console.log('getMoveToSquares() ' + player);
+
+    var squares = [];
+    var direction = player === red ? -1 : 1;
+
+    var row = this.selectedPiece[0] + direction;
+
+    // check if forward left space is empty
+    var column = this.selectedPiece[1] - 1;
+    if (this.board[row][column] === blank) {
+      squares.push([row - 1, column - 1]);
+    }
+
+    // check if forward right space is empty
+    var column = this.selectedPiece[1] + 1;
+    if (this.board[row][column] === blank) {
+      squares.push( [ row -1, column -1]);
+    }
+
+    return squares;
   }
 }
 
@@ -139,11 +167,14 @@ var controller = {
     }
   },
 
-  squareSelected: function(row,  column) {
-    console.log('squareSelected() row '  + row + ' column ' + column);
+  pieceSelected: function(row,  column) {
+    console.log('pieceSelected() row '  + row + ' column ' + column);
 
-    this.currentPlayer = this.currentPlayer === red ? black : red;
-    this.takeTurn( this.currentPlayer);
+    model.setSelectedPiece(row, column);
+    var $moveToSquares = model.getMoveToSquares(this.currentPlayer);
+
+    // this.currentPlayer = this.currentPlayer === red ? black : red;
+    // this.takeTurn( this.currentPlayer);
   }
 }
 
@@ -217,21 +248,21 @@ var view = {
     $('#score').html(str);
   },
 
-  squareSelectedHandler: function() {
-    console.log('view.squareSelectedHandler()');
+  pieceSelectedHandler: function() {
+    console.log('view.pieceSelectedHandler()');
 
-    var $row = $(this).attr('row');
-    var $column = $(this).attr('column');
+    var $row = parseInt( $(this).attr('row'));
+    var $column = parseInt( $(this).attr('column'));
 
     // remove handlers and highlight class
     var $rows = $('#board').children();
     for (var i = 0; i < $rows.length; i++) {
       var $curRow = $rows.eq(i);
       $curRow.children().removeClass('highlight');
-      $curRow.children().off('click', this.squareSelectedHandler);
+      $curRow.children().off('click', this.pieceSelectedHandler);
     }
 
-    controller.squareSelected($row, $column);
+    controller.pieceSelected($row, $column);
   },
 
   // add click handler to square
@@ -251,7 +282,7 @@ var view = {
     }
 
     // add handler
-    $square.on('click', this.squareSelectedHandler);
+    $square.on('click', this.pieceSelectedHandler);
   },
 
 }
