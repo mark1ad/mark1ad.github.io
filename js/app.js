@@ -65,7 +65,6 @@ var model = {
   setSelectedPiece: function(row, column) {
     console.log('model.setSelectedPiece(' + row + ', ' + column + ')');
     this.selectedPiece = [ row, column ];
-    console.log(this.selectedPiece);
   },
 
   getSelectedPiece: function() {
@@ -122,7 +121,6 @@ var model = {
         availableSquares.push( [newRow, newCol]);
       }
     }
-
     return availableSquares;
   },
 
@@ -160,22 +158,10 @@ var model = {
     var squares;
     var direction = player === red ? -1 : 1;
 
-    var row = this.selectedPiece[0] + direction;
-    sqaures = this.pieceCanMove(row, this.selectedPiece[1]);
+    squares = this.pieceCanMove(direction,
+      this.selectedPiece[0],
+      this.selectedPiece[1]);
 
-    // // check if forward left space is empty
-    // var column = this.selectedPiece[1] - 1;
-    // if (this.board[row][column] === blank) {
-    //   squares.push([row - 1, column - 1]);
-    // }
-    //
-    // // check if forward right space is empty
-    // var column = this.selectedPiece[1] + 1;
-    // if (this.board[row][column] === blank) {
-    //   squares.push( [ row -1, column -1]);
-    // }
-console.log(this.selectedPiece[1]);
-    console.log(squares);
     return squares;
   },
 
