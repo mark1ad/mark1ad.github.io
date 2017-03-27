@@ -3,6 +3,7 @@ $(function() {
 
   controller.makeBoard();
   controller.placePieces();
+  model.printBoard();
 
   view.showNumPieces(12, 12);
   view.showScore(0, 0);
@@ -29,6 +30,8 @@ var model = {
   // life easier in other operations
   board: [],
   selectedPiece: [],
+  piecesLeft: {
+  },
 
   //***************************************
   // Set up data objects - used once after page first loads
@@ -47,10 +50,13 @@ var model = {
   // initialize - creates the array to store state of the board in
   initialize: function() {
     console.log('model.initialize()');
+    this.piecesLeft[red] = 12;
+    this.piecesLeft[black] = 12;
     for (var row = 0; row < 8; row++) {
       this.makeRow( row, blank);
     }
   },
+
 
   //*****************************
   // Update game state
@@ -90,6 +96,7 @@ var model = {
     // take care of a jumped piece
       var distanceMoved = Math.abs(this.selectedPiece[1] - column);
       if (distanceMoved === 2) {
+        this.piecesLeft[player]--;
         // we've got a jumped
         if (column < this.selectedPiece[1]) {
           // jumped left remove from board
@@ -237,7 +244,8 @@ var model = {
   //**********************************
   // TODO: this function is for debugging, remove when done.
   printBoard: function() {
-
+    console.log('red pieces: ' + this.piecesLeft[red]);
+    console.log('black pieces: ' + this.piecesLeft[black]);
     for (var i = 0; i < this.board.length; i++) {
       console.log(this.board[i]);
     }
@@ -323,11 +331,7 @@ var controller = {
     }
 
     var jumpToSquares = model.getJumpToSquares(this.currentPlayer);
-    console.log(jumpToSquares.length);
-    console.log(jumpToSquares[0]);
     for (var i = 0; i < jumpToSquares.length; i++) {
-      console.log(i);
-      console.log(jumpToSquares[1]);
       view.addSelectedSquareHandler(jumpToSquares[i][0], jumpToSquares[i][1]);
     }
   },
@@ -345,13 +349,11 @@ var controller = {
 
     // move piece in model
     var pieceJumped = model.movePiece(row, column);
-    console.log('################################');
-    model.printBoard();
 
     if (pieceJumped.length === 2) {
       // piece was jumped remove it from display
-      var jumpedPiece = view.removePiece(pieceJumped[0], pieceJumped[1]);
-      view.removePiece(jumpedPiece[0], jumpedPiece[1]);
+      view.removePiece(pieceJumped[0], pieceJumped[1]);
+      view.removePiece(pieceJumped[0], pieceJumped[1]);
     }
 
     this.currentPlayer = this.currentPlayer === red ? black : red;
