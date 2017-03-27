@@ -40,58 +40,46 @@ var model = {
     console.log('model.makeRow()');
 
     this.board[row] = [];
-    this.board[row].length = 10;
-    this.board[row].fill(initialValue, blank, 10);
+    this.board[row].length = 8;
+    this.board[row].fill(initialValue, blank, 8);
   },
 
   // initialize - creates the array to store state of the board in
   initialize: function() {
     console.log('model.initialize()');
-
-    // make edge row and fill it with 'R'
-    this.makeRow(0, this.outOfPlay);
-
-
-    // make inside rows
-    for (var row = 1; row < 9; row++) {
+    for (var row = 0; row < 8; row++) {
       this.makeRow( row, blank);
-      // make edges occupied
-      this.board[row][0] = this.outOfPlay;
-      this.board[row][9] = this.outOfPlay;
     }
-
-    // make last row, which is an occupied edge row
-    this.makeRow(9, this.outOfPlay);
   },
 
   //*****************************
   // Update game state
   //******************************
   placePiece: function(color, rowIndex, colIndex) {
-    console.log('model.placePiece()');
+    console.log('model.placePiece( ' + rowIndex + ', ' + colIndex + ')');
 
     // increment indexes because of edge rows
-    rowIndex++;
-    colIndex++;
     this.board[rowIndex][colIndex] = color;
   },
 
   setSelectedPiece: function(row, column) {
     console.log('model.setSelectedPiece(' + row + ', ' + column + ')');
-    this.selectedPiece = [ row + 1, column + 1 ];
+    this.selectedPiece = [ row, column ];
+    console.log(this.selectedPiece);
   },
 
   getSelectedPiece: function() {
-    return [ this.selectedPiece[0] - 1, this.selectedPiece[1] - 1];
+    return [ this.selectedPiece[0], this.selectedPiece[1]];
   },
 
   movePiece: function(row, column) {
     console.log('model.movePiece(' + row + ', ' + column + ')');
-    row++;
-    column++;
 
     var player = this.board[this.selectedPiece[0]][this.selectedPiece[1]];
+
+    // remove from current position
     this.board[this.selectedPiece[0]][this.selectedPiece[1]] = blank;
+    // place on new position
     this.board[row][column] = player;
 
     this.selectedPiece = [];
@@ -100,6 +88,43 @@ var model = {
   //**********************************
   // Get playable squares/pieces
   //**********************************
+
+  // pieceCanMove - returns an array of squares that piece can move to. array
+  // is empty if there are no squares available
+  pieceCanMove: function(direction, row, column) {
+    console.log('pieceCanMove( ' + direction + ', ' + row + ', ' + column +')');
+    var newRow = row + direction;
+    var availableSquares = [];
+    // var moveLeft = true;
+    // var moveRight = true;
+
+    if (newRow < 0 || newRow > 7) {
+      // moving forward will take piece off the board
+      return false;
+    }
+
+    //check moving left
+    var newCol = column - 1;
+    if (newCol >= 0) {
+      // can move left
+      if (this.board[newRow][newCol] === blank) {
+        // sqaure is empty
+        availableSquares.push( [newRow, newCol]);
+      }
+    }
+
+    // check moving right
+    newCol = column + 1;
+    if (newCol < 8) {
+      // piece can move right
+      if (this.board[newRow][newCol] === blank) {
+        // right square is empty
+        availableSquares.push( [newRow, newCol]);
+      }
+    }
+
+    return availableSquares;
+  },
 
   // getValidPieces - returns an array of arrays. Inner arrays are the
   // coordinates of pieces that can be moved. [col, row]
@@ -110,16 +135,18 @@ var model = {
 
     var pieces = [];
 
-    for (var row = 1; row <= 8; row++) {
-      for (var col = 1; col <= 8; col++ ) {
+    // check each row
+    for (var row = 0; row < 8; row++) {
+      // check each sqaure in row
+      for (var col = 0; col < 8; col++ ) {
+        // check if player is on this square
         if (this.board[row][col] === player) {
-          if (this.board[row + direction][col - 1] === blank
-            || this.board[row + direction][col + 1] === blank) {
-              // piece can be played
-              pieces.push( [col - 1, row - 1]);
-            }
+          // check if player can move
+          if (this.pieceCanMove(direction, row, col).length > 0) {
+            pieces.push( [row, col]);
           }
         }
+      }
     }
 
     return pieces;
@@ -130,23 +157,25 @@ var model = {
   getMoveToSquares: function(player) {
     console.log('model.getMoveToSquares() ' + player);
 
-    var squares = [];
+    var squares;
     var direction = player === red ? -1 : 1;
 
     var row = this.selectedPiece[0] + direction;
+    sqaures = this.pieceCanMove(row, this.selectedPiece[1]);
 
-    // check if forward left space is empty
-    var column = this.selectedPiece[1] - 1;
-    if (this.board[row][column] === blank) {
-      squares.push([row - 1, column - 1]);
-    }
-
-    // check if forward right space is empty
-    var column = this.selectedPiece[1] + 1;
-    if (this.board[row][column] === blank) {
-      squares.push( [ row -1, column -1]);
-    }
-
+    // // check if forward left space is empty
+    // var column = this.selectedPiece[1] - 1;
+    // if (this.board[row][column] === blank) {
+    //   squares.push([row - 1, column - 1]);
+    // }
+    //
+    // // check if forward right space is empty
+    // var column = this.selectedPiece[1] + 1;
+    // if (this.board[row][column] === blank) {
+    //   squares.push( [ row -1, column -1]);
+    // }
+console.log(this.selectedPiece[1]);
+    console.log(squares);
     return squares;
   },
 
@@ -224,7 +253,7 @@ var controller = {
     // add handlers to playable pieces
     var validSquares = model.getValidPieces(player);
     for (var i = 0; i < validSquares.length; i++) {
-      view.addSelectPieceHandler(validSquares[i][1], validSquares[i][0]);
+      view.addSelectPieceHandler(validSquares[i][0], validSquares[i][1]);
     }
   },
 
