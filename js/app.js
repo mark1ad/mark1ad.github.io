@@ -71,17 +71,43 @@ var model = {
     return [ this.selectedPiece[0], this.selectedPiece[1]];
   },
 
+  // movePiece - moves a piece in the model. If the move was a jump remove the
+  // jumped piece.
+  // Returns an array with the coordinates of the jumped piece. If not a jump
+  // return an empty array
   movePiece: function(row, column) {
     console.log('model.movePiece(' + row + ', ' + column + ')');
 
     var player = this.board[this.selectedPiece[0]][this.selectedPiece[1]];
+    var direction = player === red ? -1 : 1;
+    var jumpedPiece = [];
 
     // remove from current position
     this.board[this.selectedPiece[0]][this.selectedPiece[1]] = blank;
     // place on new position
     this.board[row][column] = player;
 
+    // take care of a jumped piece
+      var distanceMoved = Math.abs(this.selectedPiece[1] - column);
+      if (distanceMoved === 2) {
+        // we've got a jumped
+        if (column < this.selectedPiece[1]) {
+          // jumped left remove from board
+          jumpedPiece = [(this.selectedPiece[0] + direction),
+            (this.selectedPiece[1] - 1)];
+          this.board[jumpedPiece[0]][jumpedPiece[1]] = blank;
+        }
+        else {
+          // jump right removed from board
+          jumpedPiece = [(this.selectedPiece[0] + direction),
+            (this.selectedPiece[1] + 1)];
+          this.board[jumpedPiece[0]][jumpedPiece[1]] = blank;
+        }
+      }
+
     this.selectedPiece = [];
+
+    return jumpedPiece;
   },
 
   //**********************************
@@ -125,7 +151,7 @@ var model = {
   },
 
   // getValidPieces - returns an array of arrays. Inner arrays are the
-  // coordinates of pieces that can be moved. [col, row]
+    // coordinates of pieces that can be moved. [col, row]
   getValidPieces: function(player){
     // get direction pieces are moving. Red moves from 8 towards 0 so direction
     // is negative. Black is the opposite.
@@ -161,6 +187,46 @@ var model = {
     squares = this.pieceCanMove(direction,
       this.selectedPiece[0],
       this.selectedPiece[1]);
+
+    return squares;
+  },
+
+  // getJumpToSquares - Gets the squares that the selected piece can jump to.
+  // Returns an array of array. Inner arrays are the squares to jump to.
+  getJumpToSquares: function(player) {
+    console.log('model.getJumpToSquares(' + player + ')');
+
+    var direction = player === red ? -1 : 1;
+    var squares = [];
+    var row = this.getSelectedPiece()[0];
+    var col = this.getSelectedPiece()[1];
+    var opponent = player === red ? black : red;
+
+    if ((row + direction) > 7 || (row + direction) < 0) {
+      // landing square is off the end of the board
+      return squares;
+    }
+
+    if ((col - 1) < 0 || (col + 1) > 7) {
+      // landing square is off the edge of the board
+      return squares;
+    }
+
+    // check jumping left
+    var jumpedSquare = this.board[row + direction][col - 1];
+    var landingSquare = this.board[row + 2 * direction][col - 2];
+    if (jumpedSquare === opponent && landingSquare === blank ) {
+      // we have a jump
+      squares.push([row + 2 * direction, col - 2]);
+    }
+
+    // check jumping right
+    jumpedSquare = this.board[row + direction][col + 1];
+    landingSquare = this.board[row + 2 * direction][col + 2];
+    if (jumpedSquare === opponent && landingSquare === blank) {
+      // we have a jump
+      squares.push([row + 2 * direction, col + 2]);
+    }
 
     return squares;
   },
@@ -256,6 +322,14 @@ var controller = {
       view.addSelectedSquareHandler(moveToSquares[i][0], moveToSquares[i][1]);
     }
 
+    var jumpToSquares = model.getJumpToSquares(this.currentPlayer);
+    console.log(jumpToSquares.length);
+    console.log(jumpToSquares[0]);
+    for (var i = 0; i < jumpToSquares.length; i++) {
+      console.log(i);
+      console.log(jumpToSquares[1]);
+      view.addSelectedSquareHandler(jumpToSquares[i][0], jumpToSquares[i][1]);
+    }
   },
 
   // squareSelected - handler for when a player selects a square to move to.
@@ -270,7 +344,15 @@ var controller = {
     view.placePiece(this.currentPlayer, row, column);
 
     // move piece in model
-    model.movePiece(row, column);
+    var pieceJumped = model.movePiece(row, column);
+    console.log('################################');
+    model.printBoard();
+
+    if (pieceJumped.length === 2) {
+      // piece was jumped remove it from display
+      var jumpedPiece = view.removePiece(pieceJumped[0], pieceJumped[1]);
+      view.removePiece(jumpedPiece[0], jumpedPiece[1]);
+    }
 
     this.currentPlayer = this.currentPlayer === red ? black : red;
     this.takeTurn( this.currentPlayer);
