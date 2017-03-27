@@ -294,7 +294,7 @@ var view = {
 
     for (var rowNum = 0; rowNum < 8; rowNum++) {
       // make a row
-      $row = $('<div>');
+      $row = $('<div>').addClass('row');
       $('#board').append($row);
 
       for (var colNum = 0; colNum < 8; colNum++) {

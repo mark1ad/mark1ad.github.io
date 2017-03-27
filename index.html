@@ -1,51 +1,55 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="utf-8">
-    <title>Checkers!</title>
-    <link rel="stylesheet" href="css/style.css">
-    <script
-			  src="https://code.jquery.com/jquery-3.2.1.min.js"
-			  integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
-			  crossorigin="anonymous"></script>
-    <script type="text/javascript" src="js/app.js">
+<head>
+  <meta charset="utf-8">
+  <title>Checkers!</title>
+  <link rel="stylesheet" href="css/style.css">
+  <script
+  src="https://code.jquery.com/jquery-3.2.1.min.js"
+  integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+  crossorigin="anonymous"></script>
+  <script type="text/javascript" src="js/app.js">
 
-    </script>
-  </head>
-  <body>
-    <header>
-      <h1>Checkers!</h1>
-      <h2>The sport of Kings</h2>
-    </header>
+  </script>
+</head>
+<body>
+  <header>
+    <h1>Checkers!</h1>
+    <h2>The sport of Kings</h2>
+  </header>
 
-    <main>
+  <main>
+    <div id="board-container">
       <div id="board" class="board">
 
       </div>
+    </div>
 
+    <div id="info-container">
       <div id='info' >
-        <p id="winner">winner!</p>
-        <p id="turn">Whose turn</p>
-        <p id="pieces-left">Pieces left</p>
-        <p id="score">Score</p>
+        <div class="field" id="winner">winner!</div>
+        <div class="field" id="turn">Whose turn</div>
+        <div class="field" id="pieces-left">Pieces left</div>
+        <div class="field" id="score">Score</div>
         <button type="button" name="button">New Game</button><br/>
-        <p>
+        <div class="field">
           <label for="beg-check">Beginner Mode:</label>
           <input id="beg-check" type="checkbox" name="beginner" value="beginner">
-        </p>
-        <p>
+        </div>
+        <div class="field">
           Instructions:<br/>
           1. Select piece to move<br/>
           2. Select square to move to<br/>
           3. Let other player have a turn<br/>
           4. Repeat until you've won!<br/>
-        </p>
-        <p>
+        </div>
+        <div class="field">
           Beginner mode highlights your available plays. It will take effect in the next game.
-        </p>
+        </div>
       </div>
-    </main>
+      </div>
+  </main>
 
-    <footer>footer</footer>
-  </body>
+  <footer>footer</footer>
+</body>
 </html>
