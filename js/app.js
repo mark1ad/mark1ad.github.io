@@ -238,6 +238,12 @@ var model = {
     return squares;
   },
 
+  //***************************
+  // Misc. methods
+  //**************************
+  getNumPieces: function() {
+    return [ this.piecesLeft[red], this.piecesLeft[black]];
+  },
 
   //***********************************
   // debug methods
@@ -355,6 +361,9 @@ var controller = {
       view.removePiece(pieceJumped[0], pieceJumped[1]);
       view.removePiece(pieceJumped[0], pieceJumped[1]);
     }
+
+    var numPieces = model.getNumPieces();
+    view.showNumPieces(numPieces[0], numPieces[1]);
 
     this.currentPlayer = this.currentPlayer === red ? black : red;
     this.takeTurn( this.currentPlayer);
