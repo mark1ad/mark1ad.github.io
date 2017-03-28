@@ -173,7 +173,9 @@ var model = {
         // check if player is on this square
         if (this.board[row][col] === player) {
           // check if player can move
-          if (this.pieceCanMove(direction, row, col).length > 0) {
+          var moveSquares = this.pieceCanMove(direction, row, col);
+          var jumpSquares = this.getJumpToSquares(player, row, col);
+          if (moveSquares.length > 0 || jumpSquares.length > 0) {
             pieces.push( [row, col]);
           }
         }
@@ -200,13 +202,11 @@ var model = {
 
   // getJumpToSquares - Gets the squares that the selected piece can jump to.
   // Returns an array of array. Inner arrays are the squares to jump to.
-  getJumpToSquares: function(player) {
+  getJumpToSquares: function(player, row, col) {
     console.log('model.getJumpToSquares(' + player + ')');
 
     var direction = player === red ? -1 : 1;
     var squares = [];
-    var row = this.getSelectedPiece()[0];
-    var col = this.getSelectedPiece()[1];
     var opponent = player === red ? black : red;
 
     if ((row + direction) > 7 || (row + direction) < 0) {
@@ -214,25 +214,24 @@ var model = {
       return squares;
     }
 
-    if ((col - 1) < 0 || (col + 1) > 7) {
-      // landing square is off the edge of the board
-      return squares;
-    }
-
     // check jumping left
-    var jumpedSquare = this.board[row + direction][col - 1];
-    var landingSquare = this.board[row + 2 * direction][col - 2];
-    if (jumpedSquare === opponent && landingSquare === blank ) {
-      // we have a jump
-      squares.push([row + 2 * direction, col - 2]);
+    if ((col - 2 ) >= 0) {
+      var jumpedSquare = this.board[row + direction][col - 1];
+      var landingSquare = this.board[row + 2 * direction][col - 2];
+      if (jumpedSquare === opponent && landingSquare === blank ) {
+        // we have a jump
+        squares.push([row + 2 * direction, col - 2]);
     }
+  }
 
     // check jumping right
-    jumpedSquare = this.board[row + direction][col + 1];
-    landingSquare = this.board[row + 2 * direction][col + 2];
-    if (jumpedSquare === opponent && landingSquare === blank) {
-      // we have a jump
-      squares.push([row + 2 * direction, col + 2]);
+    if ((col + 2) <= 7) {
+      jumpedSquare = this.board[row + direction][col + 1];
+      landingSquare = this.board[row + 2 * direction][col + 2];
+      if (jumpedSquare === opponent && landingSquare === blank) {
+        // we have a jump
+        squares.push([row + 2 * direction, col + 2]);
+      }
     }
 
     return squares;
@@ -336,7 +335,7 @@ var controller = {
       view.addSelectedSquareHandler(moveToSquares[i][0], moveToSquares[i][1]);
     }
 
-    var jumpToSquares = model.getJumpToSquares(this.currentPlayer);
+    var jumpToSquares = model.getJumpToSquares(this.currentPlayer, row, column);
     for (var i = 0; i < jumpToSquares.length; i++) {
       view.addSelectedSquareHandler(jumpToSquares[i][0], jumpToSquares[i][1]);
     }
