@@ -245,6 +245,11 @@ var model = {
     return [ this.piecesLeft[red], this.piecesLeft[black]];
   },
 
+  resetNumPieces: function() {
+    this.piecesLeft[red] = 12;
+    this.piecesLeft[black] = 12;
+  },
+
   // getWinner - returns the winning player. Returns blank if no winner
   getWinner: function() {
     if (this.piecesLeft[red] <= 0) {
@@ -339,6 +344,10 @@ var controller = {
 
   newGame: function() {
     console.log('controller.newGame()');
+
+    model.resetNumPieces();
+    var numPieces = model.getNumPieces();
+    view.showNumPieces(numPieces[0], numPieces[1]);
 
     view.removeAllHandlers();
     this.placePieces();
