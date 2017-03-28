@@ -1,14 +1,14 @@
 $(function() {
   console.log('checkers connected');
 
-  controller.makeBoard();
-  controller.placePieces();
+  controller.setUpGame();
   model.printBoard();
 
   view.showNumPieces(12, 12);
   view.showScore(0, 0);
 
-  controller.takeTurn(red);
+  // controller.takeTurn(red);
+  controller.newGame();
 });
 
 //***************************************
@@ -252,7 +252,7 @@ var model = {
       return black;
     }
 
-    if (this.piecesLeft[black] <= 10) {
+    if (this.piecesLeft[black] <= 0) {
       // red won
       return red;
     }
@@ -299,6 +299,14 @@ var controller = {
   placePieces: function() {
     console.log('controler.placePieces()');
 
+    // clear board
+    for (var row = 0; row < 8; row++) {
+      for (var col = 0; col < 8; col++) {
+        view.placePiece(blank, row, col);
+        model.placePiece(blank, row, col);
+      }
+    }
+
     // place black pieces
     for (var row = 0; row < 3; row++) {
       for(var col = 0; col < 8; col++) {
@@ -318,6 +326,23 @@ var controller = {
         }
       }
     }
+  },
+
+  setUpGame: function() {
+    this.makeBoard();
+    this.placePieces();
+  },
+
+  //*******************************
+  // Set up new game methods
+  //*******************************
+
+  newGame: function() {
+    console.log('controller.newGame()');
+
+    view.removeAllHandlers();
+    this.placePieces();
+    this.takeTurn(red);
   },
 
   //**********************************
@@ -387,8 +412,9 @@ var controller = {
       view.showWinner(winner);
       view.showTurn("");
       view.removeAllHandlers();
+      this.setUpGame();
       return;
-    }
+      }
 
     this.currentPlayer = this.currentPlayer === red ? black : red;
     this.takeTurn( this.currentPlayer);
@@ -409,6 +435,8 @@ var view = {
   // makes the board in the html
   makeBoard: function() {
     console.log('view.makeBoard()');
+
+    $('#new-game').on('click', this.newGameHandler);
 
     for (var rowNum = 0; rowNum < 8; rowNum++) {
       // make a row
@@ -490,6 +518,12 @@ var view = {
   // Event handlers
   //*******************************
 
+  // new game button
+  newGameHandler: function() {
+    console.log('view.newGameHandler()');
+    controller.newGame();
+  },
+
   // add handler to square
   addHandler: function(handler, row, column) {
     console.log('view.addHandler( ' + handler.name + ', ' + row + ', ' + column + ')');
@@ -510,15 +544,13 @@ var view = {
   },
 
   // remove handlers
-  removeAllHandlers: function(handler) {
+  removeAllHandlers: function() {
     console.log('view.removeAllHandlers()');
     var $rows = $('#board').children();
     for (var i = 0; i < $rows.length; i++) {
       var $curRow = $rows.eq(i);
       $curRow.children().removeClass('highlight');
-      // TODO: should need to remove one or the other handler
-      $curRow.children().off('click', this.pieceSelectedHandler);
-      $curRow.children().off('click', this.squareSelectedHandler)
+      $curRow.children().off();
     }
   },
 
@@ -543,7 +575,7 @@ var view = {
 
     var $row = parseInt( $(this).attr('row'));
     var $column = parseInt( $(this).attr('column'));
-    view.removeAllHandlers(this.pieceSelectedHandler);
+    view.removeAllHandlers();
     $(this).addClass('highlight');
     controller.pieceSelected($row, $column);
   },
@@ -556,7 +588,7 @@ var view = {
 
     var $row = parseInt( $(this).attr('row'));
     var $column = parseInt( $(this).attr('column'))
-    view.removeAllHandlers(this.squareSelectedHandler);
+    view.removeAllHandlers();
     controller.squareSelected($row, $column);
   },
 

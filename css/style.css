@@ -49,6 +49,10 @@ footer {
   background: yellow;
 }
 
+/***************************/
+/* Rules for information elements */
+/***************************/
+
 #info-container {
   display: flex;
   justify-content: center;
@@ -76,4 +80,20 @@ footer {
   margin-bottom: 2px;
   margin-left: 2%;
   margin-right: 4%;
+}
+
+
+#new-game {
+  display: flex;
+  margin-top: 4px;
+  margin-bottom: 10px;
+  background: lightBlue;
+}
+
+#turn {
+  height: 2em;
+}
+
+#winner {
+  height: 2em;
 }
