@@ -342,6 +342,7 @@ var controller = {
 
     view.removeAllHandlers();
     this.placePieces();
+    this.currentPlayer = red;
     this.takeTurn(red);
   },
 
