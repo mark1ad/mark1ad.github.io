@@ -373,7 +373,7 @@ var controller = {
 // view - where the display lives
 //***************************************
 
-var beginnerMode = true; // only for use in view object. Do not use anywhere
+var beginnerMode = false; // only for use in view object. Do not use anywhere
                         // else
 var view = {
   //******************************
@@ -518,6 +518,7 @@ var view = {
     var $row = parseInt( $(this).attr('row'));
     var $column = parseInt( $(this).attr('column'));
     view.removeAllHandlers(this.pieceSelectedHandler);
+    $(this).addClass('highlight');
     controller.pieceSelected($row, $column);
   },
 
