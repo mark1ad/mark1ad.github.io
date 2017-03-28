@@ -49,6 +49,10 @@ footer {
   background: yellow;
 }
 
+/*****************************/
+/*Rules for information elements*/
+/*****************************/
+
 #info-container {
   display: flex;
   justify-content: center;
@@ -76,4 +80,8 @@ footer {
   margin-bottom: 2px;
   margin-left: 2%;
   margin-right: 4%;
+}
+
+#turn {
+  height: 2em;
 }

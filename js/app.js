@@ -96,7 +96,8 @@ var model = {
     // take care of a jumped piece
       var distanceMoved = Math.abs(this.selectedPiece[1] - column);
       if (distanceMoved === 2) {
-        this.piecesLeft[player]--;
+        var opponent = player === red ? black : red;
+        this.piecesLeft[opponent]--;
         // we've got a jumped
         if (column < this.selectedPiece[1]) {
           // jumped left remove from board
@@ -244,6 +245,22 @@ var model = {
     return [ this.piecesLeft[red], this.piecesLeft[black]];
   },
 
+  // getWinner - returns the winning player. Returns blank if no winner
+  getWinner: function() {
+    if (this.piecesLeft[red] <= 0) {
+      // black won
+      return black;
+    }
+
+    if (this.piecesLeft[black] <= 10) {
+      // red won
+      return red;
+    }
+
+    // no winner yet
+    return blank;
+  },
+
   //***********************************
   // debug methods
   //**********************************
@@ -363,6 +380,14 @@ var controller = {
 
     var numPieces = model.getNumPieces();
     view.showNumPieces(numPieces[0], numPieces[1]);
+
+    var winner = model.getWinner();
+    if (winner !== blank) {
+      view.showWinner(winner);
+      view.showTurn("");
+      view.removeAllHandlers();
+      return;
+    }
 
     this.currentPlayer = this.currentPlayer === red ? black : red;
     this.takeTurn( this.currentPlayer);
@@ -484,15 +509,13 @@ var view = {
   },
 
   // remove handlers
-  removeAllHandlers: function(handler) {
+  removeAllHandlers: function() {
     console.log('view.removeAllHandlers()');
     var $rows = $('#board').children();
     for (var i = 0; i < $rows.length; i++) {
       var $curRow = $rows.eq(i);
       $curRow.children().removeClass('highlight');
-      // TODO: should need to remove one or the other handler
-      $curRow.children().off('click', this.pieceSelectedHandler);
-      $curRow.children().off('click', this.squareSelectedHandler)
+      $curRow.children().off();
     }
   },
 
@@ -517,7 +540,7 @@ var view = {
 
     var $row = parseInt( $(this).attr('row'));
     var $column = parseInt( $(this).attr('column'));
-    view.removeAllHandlers(this.pieceSelectedHandler);
+    view.removeAllHandlers();
     $(this).addClass('highlight');
     controller.pieceSelected($row, $column);
   },
@@ -530,7 +553,7 @@ var view = {
 
     var $row = parseInt( $(this).attr('row'));
     var $column = parseInt( $(this).attr('column'))
-    view.removeAllHandlers(this.squareSelectedHandler);
+    view.removeAllHandlers();
     controller.squareSelected($row, $column);
   },
 
