@@ -17,8 +17,6 @@ $(function() {
 const black = 'Black';
 const red = 'Red';
 const blank = '';
-<<<<<<< HEAD
-=======
 
 //***************************************
 // model - where the data lives
@@ -98,7 +96,8 @@ var model = {
     // take care of a jumped piece
       var distanceMoved = Math.abs(this.selectedPiece[1] - column);
       if (distanceMoved === 2) {
-        this.piecesLeft[player]--;
+        var opponent = player === red ? black : red;
+        this.piecesLeft[opponent]--;
         // we've got a jumped
         if (column < this.selectedPiece[1]) {
           // jumped left remove from board
@@ -246,6 +245,23 @@ var model = {
     return [ this.piecesLeft[red], this.piecesLeft[black]];
   },
 
+  // getWinner - returns the winning player. Returns blank if no winner
+  getWinner: function() {
+    if (this.piecesLeft[red] <= 0) {
+      // black won
+      return black;
+    }
+
+    if (this.piecesLeft[black] <= 10) {
+      // red won
+      return red;
+    }
+
+    // no winner yet
+    return blank;
+  },
+
+
   //***********************************
   // debug methods
   //**********************************
@@ -365,6 +381,14 @@ var controller = {
 
     var numPieces = model.getNumPieces();
     view.showNumPieces(numPieces[0], numPieces[1]);
+
+    var winner = model.getWinner();
+    if (winner !== blank) {
+      view.showWinner(winner);
+      view.showTurn("");
+      view.removeAllHandlers();
+      return;
+    }
 
     this.currentPlayer = this.currentPlayer === red ? black : red;
     this.takeTurn( this.currentPlayer);
@@ -537,4 +561,3 @@ var view = {
   },
 
 }
->>>>>>> parent of d0c2504... Check for win.
