@@ -456,6 +456,9 @@ var view = {
       for (var colNum = 0; colNum < 8; colNum++) {
         // make a square
         var $square = $('<div>').addClass('board-square');
+        // var $image = $('<img>');
+        // $image.attr('src', 'images/red-wood.png');
+        // $square.html($image);
 
         // set class for playable squares
         if (((rowNum + 1 % 2) + colNum) % 2 === 0) {
@@ -476,12 +479,21 @@ var view = {
   //****************************
 
   // placePiece - places a piece on the board
-  placePiece: function(color, rowIndex, colIndex) {
-    console.log('view.placePiece( ' + color + ', ' + rowIndex + ', ' + colIndex + ')');
+  placePiece: function(player, rowIndex, colIndex) {
+    console.log('view.placePiece( ' + player + ', ' + rowIndex + ', ' + colIndex + ')');
 
     var $row = $('#board').children().eq(rowIndex);
     var $square = $row.children().eq(colIndex);
-    $square.text(color);
+
+    var $img = $('<img>');
+    if (player === red) {
+      $img.attr('src', 'images/red-piece.png');
+    }
+    else if (player === black) {
+      $img.attr('src', 'images/black-piece.png');
+    }
+    // $square.text(color);
+    $square.html($img);
   },
 
   removePiece: function(rowIndex, colIndex) {

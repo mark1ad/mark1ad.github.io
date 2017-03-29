@@ -11,6 +11,10 @@ footer {
   text-align: center;
 }
 
+/*********************/
+/* Rules for board */
+/*********************/
+
 #board-container {
   display: flex;
   justify-content: center;
@@ -35,18 +39,27 @@ footer {
 .board-square {
   display: flex;
   border: 2px solid darkRed;
-  height: 50px;
-  width: 12.5%;
+  height: 75px;
+  /*width: 12.5%;*/
+  width: 75px;
   background-color: white;
 }
 
 .playable-square {
   background-color: darkRed;
+  /*background-image: url("images/red-wood.png");*/
+  /*background: url("images/red-piece.png");*/
   color: white;
+  /*color: url("images/red-wood.png");*/
 }
 
 .highlight {
   background: yellow;
+}
+
+img {
+  display:flex;
+  width: 100%;
 }
 
 /***************************/
