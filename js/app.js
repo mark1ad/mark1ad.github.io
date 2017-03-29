@@ -26,12 +26,10 @@ const blank = '';
 //****************************************
 var model = {
   outOfPlay: 'x', // marks a square that is not playable
-  // board is 10x10. The squares on the edges are dummy squares to make
-  // life easier in other operations
   board: [],
   selectedPiece: [],
-  piecesLeft: {
-  },
+  piecesLeft: {},
+  wins: {},
 
   //***************************************
   // Set up data objects - used once after page first loads
@@ -52,6 +50,8 @@ var model = {
     console.log('model.initialize()');
     this.piecesLeft[red] = 12;
     this.piecesLeft[black] = 12;
+    this.wins[red] = 0;
+    this.wins[black] = 0;
     for (var row = 0; row < 8; row++) {
       this.makeRow( row, blank);
     }
@@ -222,8 +222,8 @@ var model = {
       if (jumpedSquare === opponent && landingSquare === blank ) {
         // we have a jump
         squares.push([row + 2 * direction, col - 2]);
+      }
     }
-  }
 
     // check jumping right
     if ((col + 2) <= 7) {
@@ -254,16 +254,24 @@ var model = {
   getWinner: function() {
     if (this.piecesLeft[red] <= 0) {
       // black won
+      this.wins[black]++;
       return black;
     }
 
     if (this.piecesLeft[black] <= 0) {
       // red won
+      this.wins[red]++;
       return red;
     }
 
     // no winner yet
     return blank;
+  },
+
+  // getScore - returns an array with the score. Red first, black second in the
+  // array
+  getScore: function() {
+    return [this.wins[red], this.wins[black]];
   },
 
 
@@ -470,9 +478,10 @@ var controller = {
     var winner = model.getWinner();
     if (winner !== blank) {
       view.showWinner(winner);
+      var score = model.getScore();
+      view.showScore(score[0], score[1]);
       view.showTurn("", blank);
       view.removeAllHandlers();
-      this.setUpGame();
       return;
       }
 
