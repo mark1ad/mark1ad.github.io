@@ -456,14 +456,17 @@ var view = {
       for (var colNum = 0; colNum < 8; colNum++) {
         // make a square
         var $square = $('<div>').addClass('board-square');
-        // var $image = $('<img>');
-        // $image.attr('src', 'images/red-wood.png');
-        // $square.html($image);
 
+        var $img = $('<img>');
         // set class for playable squares
         if (((rowNum + 1 % 2) + colNum) % 2 === 0) {
-          $square.addClass('playable-square')
+          $square.addClass('playable-square');
+          $img.attr('src', 'images/red-wood.png');
         }
+        else {
+          $img.attr('src', 'images/white-wood.png');
+        }
+        $square.html($img);
 
         // set row and column attributes on square
         $square.attr('column', colNum);
@@ -487,20 +490,21 @@ var view = {
 
     var $img = $('<img>');
     if (player === red) {
-      $img.attr('src', 'images/red-piece.png');
+      $img.attr('src', 'images/red-piece-trans.png');
+      $square.html($img);
     }
     else if (player === black) {
-      $img.attr('src', 'images/black-piece.png');
+      $img.attr('src', 'images/black-piece-trans.png');
+      $square.html($img);
     }
-    // $square.text(color);
-    $square.html($img);
   },
 
   removePiece: function(rowIndex, colIndex) {
     console.log('view.removePiece(' + rowIndex + ', ' + colIndex + ')');
     var $row = $('#board').children().eq(rowIndex);
     var $square = $row.children().eq(colIndex);
-    $square.text('');
+    var $img = $('<img>').attr('src', 'images/red-wood.png');
+    $square.html($img);
   },
 
   //****************************

@@ -1,3 +1,7 @@
+body {
+  background-color: lightGray;
+}
+
 header {
   text-align: center;
 }
@@ -38,23 +42,19 @@ footer {
 
 .board-square {
   display: flex;
-  border: 2px solid darkRed;
-  height: 75px;
-  /*width: 12.5%;*/
-  width: 75px;
-  background-color: white;
+  border: 1px solid darkRed;
+  width: 12.5%;
+  background-image: url("../images/white-wood.png");
 }
 
 .playable-square {
   background-color: darkRed;
-  /*background-image: url("images/red-wood.png");*/
-  /*background: url("images/red-piece.png");*/
   color: white;
-  /*color: url("images/red-wood.png");*/
+  background-image: url("../images/red-wood.png");
 }
 
 .highlight {
-  background: yellow;
+  border-color: yellow;
 }
 
 img {
