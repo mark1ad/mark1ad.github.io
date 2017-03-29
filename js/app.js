@@ -447,6 +447,8 @@ var view = {
     console.log('view.makeBoard()');
 
     $('#new-game').on('click', this.newGameHandler);
+    $('#beg-check').change( this.modeCheckboxHandler);
+    $('#beg-check').prop('checked', false);
 
     for (var rowNum = 0; rowNum < 8; rowNum++) {
       // make a row
@@ -640,5 +642,12 @@ var view = {
     view.removeAllHandlers();
     controller.squareSelected($row, $column);
   },
+
+  // modeCheckboxHandler - called when the beginner mode checkbox is clicked
+  modeCheckboxHandler: function() {
+    console.log('view.modeCheckboxHandler()');
+
+    beginnerMode = $('#beg-check').is(":checked");
+  }
 
 }

@@ -25,6 +25,7 @@ footer {
   flex-direction: column;
   max-width: 600px;
   margin: 2%;
+  background-color: darkRed;
 }
 
 #board {
@@ -124,9 +125,4 @@ img {
 
 #winner {
   height: 2em;
-}
-
-/*checkbox label*/
-label {
-  color: gray;
 }
