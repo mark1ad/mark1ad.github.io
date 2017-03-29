@@ -513,6 +513,7 @@ var view = {
     var $row = $('#board').children().eq(rowIndex);
     var $square = $row.children().eq(colIndex);
     var $img = $('<img>').attr('src', 'images/red-wood.png');
+    $img.on('dragstart', function() { return false; });
     $square.html($img);
   },
 

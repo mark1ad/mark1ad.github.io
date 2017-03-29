@@ -25,27 +25,34 @@
 
     <div id="info-container">
       <div id='info' >
-        <div class="field" id="winner">Winner:</div>
-        <div class="field" id="turn">Whose turn</div>
-        <div class="field" id="pieces-left">Pieces left</div>
-        <div class="field" id="score">Score</div>
-        <button id="new-game" type="button" name="button">New Game</button><br/>
-        <div class="field">
-          <label for="beg-check">Beginner Mode:</label>
-          <input disabled id="beg-check" type="checkbox" name="beginner" value="beginner">
+        <div class="info-block">
+          <div class="field" id="winner">Winner:</div>
+          <div class="field" id="turn">Whose turn</div>
+          <div class="field" id="pieces-left">Pieces left</div>
+          <div class="field" id="score">Score</div>
         </div>
-        <div class="field">
-          Instructions:<br/>
-          1. Select piece to move<br/>
-          2. Select square to move to<br/>
-          3. Let other player have a turn<br/>
-          4. Repeat until you've won!<br/>
+
+        <div class="info-block">
+          <button id="new-game" type="button" name="button">New Game</button><br/>
+          <div class="field">
+            <label for="beg-check">Beginner Mode:</label>
+            <input disabled id="beg-check" type="checkbox" name="beginner" value="beginner">
+          </div>
         </div>
-        <div class="field">
-          Beginner mode highlights your available plays. It will take effect in the next game.
+        <div class="info-block">
+          <div class="field">
+            Instructions:<br/>
+            1. Select piece to move<br/>
+            2. Select square to move to<br/>
+            3. Let other player have a turn<br/>
+            4. Repeat until you've won!<br/>
+          </div>
+          <div class="field">
+            Beginner mode highlights your available plays. It will take effect in the next game.
+          </div>
         </div>
       </div>
-      </div>
+    </div>
   </main>
 
   <footer>footer</footer>

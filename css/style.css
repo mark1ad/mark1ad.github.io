@@ -23,6 +23,7 @@ footer {
   display: flex;
   justify-content: center;
   flex-direction: column;
+  max-width: 600px;
   margin: 2%;
 }
 
@@ -80,10 +81,16 @@ img {
   display: flex;
   justify-content: center;
   flex-wrap: wrap;
-  /*width: 20%;*/
-  /*min-width: 200px;*/
-  border: 2px solid darkBlue;
   padding: 5px;
+}
+
+.info-block {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  border: 2px solid darkBlue;
+  padding: 4px;
+  width: 100%;
 }
 
 .field {
