@@ -491,12 +491,19 @@ var view = {
     var $img = $('<img>');
     if (player === red) {
       $img.attr('src', 'images/red-piece-trans.png');
-      $square.html($img);
     }
     else if (player === black) {
       $img.attr('src', 'images/black-piece-trans.png');
-      $square.html($img);
     }
+    else {
+      if (((rowIndex + 1 % 2) + colIndex) % 2 === 0) {
+        $img.attr('src', 'images/red-wood.png');
+      }
+      else {
+        $img.attr('src', 'images/white-wood.png');
+      }
+    }
+    $square.html($img);
   },
 
   removePiece: function(rowIndex, colIndex) {
