@@ -287,6 +287,7 @@ var model = {
 //***************************************
 var controller = {
   currentPlayer: red,
+  enemy: 'human',
 
   //******************************
   // initialize game after page loads
@@ -345,6 +346,13 @@ var controller = {
   newGame: function() {
     console.log('controller.newGame()');
 
+    if ($('#human').prop('checked')) {
+      this.enemy = 'human';
+    }
+    else {
+      this.enemy = "computer";
+    }
+
     model.resetNumPieces();
     var numPieces = model.getNumPieces();
     view.showNumPieces(numPieces[0], numPieces[1]);
@@ -364,15 +372,49 @@ var controller = {
   takeTurn: function(player) {
     console.log('>>>>>> takeTurn() ' + player);
 
-    // show whose turn it is
-    var str = "It's " + player + "'s turn.";
-    view.showTurn(str, player);
-
-    // add handlers to playable pieces
-    var validSquares = model.getValidPieces(player);
-    for (var i = 0; i < validSquares.length; i++) {
-      view.addSelectPieceHandler(validSquares[i][0], validSquares[i][1]);
+    if (player === black && this.enemy === "computer") {
+      this.computerTurn();
     }
+    else {
+      // show whose turn it is
+      var str = "It's " + player + "'s turn.";
+      view.showTurn(str, player);
+
+      // add handlers to playable pieces
+      var validSquares = model.getValidPieces(player);
+      for (var i = 0; i < validSquares.length; i++) {
+        view.addSelectPieceHandler(validSquares[i][0], validSquares[i][1]);
+      }
+    }
+  },
+
+  computerTurn: function() {
+    console.log('controller.computerTurn()');
+
+    this.currentPlayer = black;
+
+    // chose piece to move
+    var pieceToMove;
+    var validPieces = model.getValidPieces(black);
+    var randIndex = Math.floor(Math.random() * validPieces.length);
+    pieceToMove = validPieces[randIndex];
+    model.setSelectedPiece(pieceToMove[0], pieceToMove[1]);
+
+    // chose where to move
+    var moveTo = [];
+    var moveToSquares = model.getMoveToSquares(black);
+    for (var i = 0; i < moveToSquares.length; i++) {
+      moveTo.push( moveToSquares[i]);
+    }
+
+    var jumpToSquares = model.getJumpToSquares(black, pieceToMove[0], pieceToMove[1]);
+    for (var i = 0; i < jumpToSquares.length; i++) {
+      moveTo.push(jumpToSquares[i]);
+    }
+
+    var whereToIndex = Math.floor(Math.random() * moveTo.length);
+    var whereTo = moveTo[whereToIndex];
+    this.squareSelected(whereTo[0], whereTo[1]);
   },
 
   // pieceSelected - handler for when a player selects a piece.

@@ -14,3 +14,6 @@ need to work to figure out which square we're on.
 
 Beginner mode is handled completely in the view object. It doesn't affect game
 play, only how the board is presented.
+
+The computer opponent has no strategy. It picks a move at random. There is a
+bug where it looks for illegal moves. Hard to find given the randomness.
