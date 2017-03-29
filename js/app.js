@@ -366,7 +366,7 @@ var controller = {
 
     // show whose turn it is
     var str = "It's " + player + "'s turn.";
-    view.showTurn(str);
+    view.showTurn(str, player);
 
     // add handlers to playable pieces
     var validSquares = model.getValidPieces(player);
@@ -420,7 +420,7 @@ var controller = {
     var winner = model.getWinner();
     if (winner !== blank) {
       view.showWinner(winner);
-      view.showTurn("");
+      view.showTurn("", blank);
       view.removeAllHandlers();
       this.setUpGame();
       return;
@@ -502,8 +502,21 @@ var view = {
     $('#winner').text(str);
   },
 
-  showTurn: function(turn) {
-    console.log('showTurn() ' + turn);
+  showTurn: function(turn, player) {
+    console.log('showTurn( ' + turn + ', ' + player + ')');
+
+    $('#turn').removeClass('redTurn');
+    $('#turn').removeClass('blackTurn')
+
+    switch (player) {
+      case red:
+        $('#turn').addClass('redTurn');
+        break;
+      case black:
+        $('#turn').addClass('blackTurn');
+      default:
+
+    }
 
     $('#turn').text(turn);
   },

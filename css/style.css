@@ -94,6 +94,14 @@ footer {
   height: 2em;
 }
 
+.redTurn {
+  color: red;
+}
+
+.blackTurn {
+  color: black;
+}
+
 #winner {
   height: 2em;
 }
