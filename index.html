@@ -4,6 +4,7 @@
   <meta charset="utf-8">
   <title>Checkers!</title>
   <link rel="stylesheet" href="css/style.css">
+  <link href="https://fonts.googleapis.com/css?family=Arimo|Baloo+Bhaina|Gloria+Hallelujah|Cinzel" rel="stylesheet">
   <script
   src="https://code.jquery.com/jquery-3.2.1.min.js"
   integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
@@ -38,8 +39,9 @@
           <div class="field">
             Opponent:
             <form class="" action="index.html" method="post">
-              <input id="human" type="radio" name="opponent" value="human">Puny Human</br>
-              <input id="computer" type="radio" name="opponent" value="computer">Terrifying Computer</br>
+              <input id="human" type="radio" name="opponent" value="human"><span id="humanText">Puny Human</span></br>
+
+              <input id="computer" type="radio" name="opponent" value="computer"><span id="computerText">Terrifying Computer</span></br>
             </form>
           </div>
           <div class="field">
@@ -57,7 +59,12 @@
             4. Repeat until you've won!<br/>
           </div>
           <div class="field">
-            Beginner mode highlights your available plays. It will take effect on the next move.
+            <p>
+              Beginner mode highlights your available plays. It will take effect on the next move.
+            </p>
+            <p>
+              Changing your oppenent will take effect in the next new game.
+            </p>
           </div>
         </div>
       </div>

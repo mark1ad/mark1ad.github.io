@@ -2,8 +2,9 @@ body {
   background-color: lightGray;
 }
 
-header {
+header, footer {
   text-align: center;
+  font-family: 'Cinzel', serif;
 }
 
 main {
@@ -83,6 +84,7 @@ img {
   justify-content: center;
   flex-wrap: wrap;
   padding: 5px;
+  font-family: 'Arimo', sans-serif;
 }
 
 .info-block {
@@ -127,4 +129,12 @@ img {
 
 #winner {
   height: 2em;
+}
+
+#humanText {
+  font-family: 'Gloria Hallelujah', cursive;
+}
+
+#computerText {
+  font-family: 'Baloo Bhaina', cursive;
 }
