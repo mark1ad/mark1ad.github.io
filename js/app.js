@@ -504,6 +504,8 @@ var view = {
       }
     }
     $square.html($img);
+    $img.on('dragstart', function() { return false; });
+
   },
 
   removePiece: function(rowIndex, colIndex) {
