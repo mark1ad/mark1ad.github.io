@@ -392,6 +392,14 @@ var controller = {
     for (var i = 0; i < jumpToSquares.length; i++) {
       view.addSelectedSquareHandler(jumpToSquares[i][0], jumpToSquares[i][1]);
     }
+
+    var piecesThatCanMove = model.getValidPieces(this.currentPlayer);
+    for (var i = 0; i < piecesThatCanMove.length; i++) {
+      if (piecesThatCanMove[i][0] !== row || piecesThatCanMove[i][1] !== column) {
+        // view.addChangeSelectedPieceHandler(piecesThatCanMove[i][0], piecesThatCanMove[i][1]);
+        view.addSelectPieceHandler(piecesThatCanMove[i][0], piecesThatCanMove[i][1]);
+      }
+    }
   },
 
   // squareSelected - handler for when a player selects a square to move to.
