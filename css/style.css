@@ -25,7 +25,6 @@ footer {
   flex-direction: column;
   max-width: 600px;
   margin: 2%;
-  background-color: darkRed;
 }
 
 #board {
@@ -34,6 +33,7 @@ footer {
   flex-wrap: wrap;
   border: 2px solid black;
   padding: 5px;
+  background-color: darkRed;
 }
 
 .row {
