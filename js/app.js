@@ -15,7 +15,9 @@ $(function() {
 //* Constants
 //***************************************
 const black = 'Black';
+const blackKing = 'bKing';
 const red = 'Red';
+const redKing = 'rKing';
 const blank = '';
 
 //***************************************
@@ -274,6 +276,21 @@ var model = {
     return [this.wins[red], this.wins[black]];
   },
 
+  // returns if piece is promoted to king, false otherwise
+  promoteToKing: function(player, row, column) {
+    if (player === red && row === 0) {
+      // king red piece
+      this.board[row][column] = redKing;
+      return true;
+    }
+    else if (player === black && row === 7) {
+      // king black piece
+      this.board[row][column] = blackKing;
+      return true;
+    }
+    return false;
+  },
+
   //***********************************
   // debug methods
   //**********************************
@@ -474,6 +491,15 @@ var controller = {
     var numPieces = model.getNumPieces();
     view.showNumPieces(numPieces[0], numPieces[1]);
 
+    if (model.promoteToKing(this.currentPlayer, row, column)) {
+      if (this.currentPlayer === red) {
+        view.placePiece(redKing, row, column);
+      }
+      else {
+        view.placePiece(blackKing, row, column);
+      }
+    }
+
     var winner = model.getWinner();
     if (winner !== blank) {
       view.showWinner(winner);
@@ -496,6 +522,8 @@ var controller = {
 var beginnerMode = false; // only for use in view object. Do not use anywhere
                         // else
 var view = {
+  piecePics: {},
+
   //******************************
   // initialize board elements after page loads
   //******************************
@@ -503,6 +531,14 @@ var view = {
   // makes the board in the html
   makeBoard: function() {
     console.log('view.makeBoard()');
+
+    // stash image file names in piecePics.
+    this.piecePics[red] = 'images/red-piece-trans.png',
+    this.piecePics[black] = 'images/black-piece-trans.png',
+    this.piecePics[redKing] = 'images/red-king.png',
+    this.piecePics[blackKing] = 'images/black-king.png',
+
+    $('#human').prop('checked', true);
 
     $('#new-game').on('click', this.newGameHandler);
     $('#beg-check').change( this.modeCheckboxHandler);
@@ -549,11 +585,8 @@ var view = {
     var $square = $row.children().eq(colIndex);
 
     var $img = $('<img>');
-    if (player === red) {
-      $img.attr('src', 'images/red-piece-trans.png');
-    }
-    else if (player === black) {
-      $img.attr('src', 'images/black-piece-trans.png');
+    if (player !== blank) {
+      $img.attr('src', this.piecePics[player]);
     }
     else {
       if (((rowIndex + 1 % 2) + colIndex) % 2 === 0) {
