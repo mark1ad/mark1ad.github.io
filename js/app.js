@@ -138,7 +138,7 @@ var model = {
 
     if (newRow < 0 || newRow > 7) {
       // moving forward will take piece off the board
-      return false;
+      return [];
     }
 
     //check moving left
@@ -146,7 +146,7 @@ var model = {
     if (newCol >= 0) {
       // can move left
       if (this.board[newRow][newCol] === blank) {
-        // sqaure is empty
+        // square is empty
         availableSquares.push( [newRow, newCol]);
       }
     }
@@ -168,6 +168,11 @@ var model = {
 
     var availableSquares = [];
 
+    if (this.board[row][column] !== this.playerToKing[player]) {
+      // this piece is not a king. do nothing.
+      return availableSquares;
+    }
+
     // check moving forward
     if (row > 0) {
       // can move forward
@@ -178,7 +183,7 @@ var model = {
       }
       // check right
       if (column < 7 && this.board[row - 1][column + 1] === blank) {
-        availableSquares.push( [row - 1][column + 1]);
+        availableSquares.push( [row - 1, column + 1]);
       }
     }
 
@@ -191,7 +196,7 @@ var model = {
       }
       // check moving left
       if (column > 0 && this.board[row + 1][column - 1] === blank) {
-        availableSquares.push( [row + 1][column - 1]);
+        availableSquares.push( [row + 1, column - 1]);
       }
     }
 
@@ -209,7 +214,7 @@ var model = {
 
     // check each row
     for (var row = 0; row < 8; row++) {
-      // check each sqaure in row
+      // check each square in row
       for (var col = 0; col < 8; col++ ) {
         // check if player is on this square
         if (this.board[row][col] === player) {
@@ -221,7 +226,7 @@ var model = {
           }
         }
         else if (this.board[row][col] === this.playerToKing[player]) {
-          // this sqaure has a king. Treat it like royality
+          // this square has a king. Treat it like royality
           var moveSquares = this.kingCanMove(player, row, col);
           if (moveSquares.length > 0) {
             pieces.push([row, col]);
@@ -244,8 +249,12 @@ var model = {
     squares = this.pieceCanMove(player,
       this.selectedPiece[0],
       this.selectedPiece[1]);
-
-    return squares;
+    // var allSquares = squares.concat( this.kingCanMove(player,
+    //     this.selectedPiece[0],
+    //     this.selectedPiece[1]));
+    var kingSquares = this.kingCanMove(player, this.selectedPiece[0], this.selectedPiece[1]);
+    var allSquares = squares.concat(kingSquares);
+    return allSquares;
   },
 
   // getJumpToSquares - Gets the squares that the selected piece can jump to.
@@ -325,15 +334,28 @@ var model = {
   promoteToKing: function(player, row, column) {
     if (player === red && row === 0) {
       // king red piece
-      this.board[row][column] = redKing;
-      return true;
+      if (this.board[row][column] === player) {
+        // let's promote this guy
+        this.board[row][column] = redKing;
+        return true;
+      }
     }
-    else if (player === black && row === 7) {
+
+    if (player === black && row === 7) {
       // king black piece
-      this.board[row][column] = blackKing;
-      return true;
+      if (this.board[row[column] === black]) {
+        // let's promote this guy
+        this.board[row][column] = blackKing;
+        return true;
+      }
     }
     return false;
+  },
+
+  getPieceType: function() {
+    console.log('getPieceType()');
+    console.log(this.selectedPiece[0] + ' ' + this.selectedPiece[1]);
+    return this.board[this.selectedPiece[0]][this.selectedPiece[1]];
   },
 
   //***********************************
@@ -495,8 +517,13 @@ var controller = {
     model.setSelectedPiece(row, column);
 
     var moveToSquares = model.getMoveToSquares(this.currentPlayer);
+    console.log(moveToSquares);
+    console.log(moveToSquares.length);
     for (var i = 0; i < moveToSquares.length; i++) {
+      console.log('start ' + i + ' ' + moveToSquares.length);
+      console.log(moveToSquares[i]);
       view.addSelectedSquareHandler(moveToSquares[i][0], moveToSquares[i][1]);
+      console.log('end ' + moveToSquares.length);
     }
 
     var jumpToSquares = model.getJumpToSquares(this.currentPlayer, row, column);
@@ -518,11 +545,10 @@ var controller = {
   squareSelected: function(row, column) {
     console.log('>>>>>>> controller.squareSelected(' + row + ', ' + column + ')');
 
-
     // move piece in view
     var oldPosition = model.getSelectedPiece();
     view.removePiece( oldPosition[0], oldPosition[1]);
-    view.placePiece(this.currentPlayer, row, column);
+    view.placePiece(model.getPieceType(), row, column);
 
     // move piece in model
     var pieceJumped = model.movePiece(row, column);
@@ -530,7 +556,7 @@ var controller = {
     if (pieceJumped.length === 2) {
       // piece was jumped remove it from display
       view.removePiece(pieceJumped[0], pieceJumped[1]);
-      view.removePiece(pieceJumped[0], pieceJumped[1]);
+      // view.removePiece(pieceJumped[0], pieceJumped[1]);
     }
 
     var numPieces = model.getNumPieces();
