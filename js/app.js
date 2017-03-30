@@ -354,7 +354,6 @@ var model = {
 
   getPieceType: function() {
     console.log('getPieceType()');
-    console.log(this.selectedPiece[0] + ' ' + this.selectedPiece[1]);
     return this.board[this.selectedPiece[0]][this.selectedPiece[1]];
   },
 
@@ -517,13 +516,8 @@ var controller = {
     model.setSelectedPiece(row, column);
 
     var moveToSquares = model.getMoveToSquares(this.currentPlayer);
-    console.log(moveToSquares);
-    console.log(moveToSquares.length);
     for (var i = 0; i < moveToSquares.length; i++) {
-      console.log('start ' + i + ' ' + moveToSquares.length);
-      console.log(moveToSquares[i]);
       view.addSelectedSquareHandler(moveToSquares[i][0], moveToSquares[i][1]);
-      console.log('end ' + moveToSquares.length);
     }
 
     var jumpToSquares = model.getJumpToSquares(this.currentPlayer, row, column);
@@ -752,6 +746,9 @@ var view = {
       $square.addClass('highlight');
     }
 
+    // doing king stuff was causing two of the same handler being assign.
+    // Remove just in case
+    $square.off('click', handler);
     // add handler
     $square.on('click', handler);
   },
