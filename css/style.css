@@ -44,7 +44,6 @@ footer {
 }
 
 .board-square {
-  display: flex;
   border: 1px solid darkRed;
   width: 12.5%;
   background-image: url("../images/white-wood.png");
