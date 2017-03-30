@@ -204,13 +204,13 @@ var model = {
   // getJumpToSquares - Gets the squares that the selected piece can jump to.
   // Returns an array of array. Inner arrays are the squares to jump to.
   getJumpToSquares: function(player, row, col) {
-    console.log('model.getJumpToSquares(' + player + ')');
+    console.log('model.getJumpToSquares(' + player + ', ' + row + ', ' + col + ')');
 
     var direction = player === red ? -1 : 1;
     var squares = [];
     var opponent = player === red ? black : red;
 
-    if ((row + direction) > 7 || (row + direction) < 0) {
+    if ((row + 2 * direction) > 7 || (row + 2 * direction) < 0) {
       // landing square is off the end of the board
       return squares;
     }
@@ -273,7 +273,6 @@ var model = {
   getScore: function() {
     return [this.wins[red], this.wins[black]];
   },
-
 
   //***********************************
   // debug methods
