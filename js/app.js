@@ -32,6 +32,7 @@ var model = {
   selectedPiece: [],
   piecesLeft: {},
   wins: {},
+  playerToKing: {}, // This maps player to its king equivalent
 
   //***************************************
   // Set up data objects - used once after page first loads
@@ -50,6 +51,8 @@ var model = {
   // initialize - creates the array to store state of the board in
   initialize: function() {
     console.log('model.initialize()');
+    this.playerToKing[red] = redKing;
+    this.playerToKing[black] = blackKing;
     this.piecesLeft[red] = 12;
     this.piecesLeft[black] = 12;
     this.wins[red] = 0;
@@ -126,9 +129,9 @@ var model = {
 
   // pieceCanMove - returns an array of squares that piece can move to. array
   // is empty if there are no squares available
-  pieceCanMove: function(direction, row, column) {
-    console.log('pieceCanMove( ' + direction + ', ' + row + ', ' + column +')');
-    var newRow = row + direction;
+  pieceCanMove: function(player, row, column) {
+    console.log('pieceCanMove( ' + player + ', ' + row + ', ' + column +')');
+    var newRow = row + (player === red ? -1 : 1);
     var availableSquares = [];
     // var moveLeft = true;
     // var moveRight = true;
@@ -160,8 +163,43 @@ var model = {
     return availableSquares;
   },
 
+  kingCanMove: function(player, row, column) {
+    console.log('model.kingCanMove( ' + player +  ', ' + row + ', ' + column + ')');
+
+    var availableSquares = [];
+
+    // check moving forward
+    if (row > 0) {
+      // can move forward
+      // check left
+      if (column > 0 && this.board[row - 1][column - 1] === blank) {
+        // can move forward left
+        availableSquares.push( [row - 1, column -1]);
+      }
+      // check right
+      if (column < 7 && this.board[row - 1][column + 1] === blank) {
+        availableSquares.push( [row - 1][column + 1]);
+      }
+    }
+
+    // check moving backward
+    if (row < 7) {
+      // check moving right
+      if (column < 7 && this.board[row + 1][column + 1] === blank) {
+        // can move backward right
+        availableSquares.push( [row + 1, column + 1]);
+      }
+      // check moving left
+      if (column > 0 && this.board[row + 1][column - 1] === blank) {
+        availableSquares.push( [row + 1][column - 1]);
+      }
+    }
+
+    return availableSquares;
+  },
+
   // getValidPieces - returns an array of arrays. Inner arrays are the
-    // coordinates of pieces that can be moved. [col, row]
+  // coordinates of pieces that can be moved. [col, row]
   getValidPieces: function(player){
     // get direction pieces are moving. Red moves from 8 towards 0 so direction
     // is negative. Black is the opposite.
@@ -176,10 +214,17 @@ var model = {
         // check if player is on this square
         if (this.board[row][col] === player) {
           // check if player can move
-          var moveSquares = this.pieceCanMove(direction, row, col);
+          var moveSquares = this.pieceCanMove(player, row, col);
           var jumpSquares = this.getJumpToSquares(player, row, col);
           if (moveSquares.length > 0 || jumpSquares.length > 0) {
             pieces.push( [row, col]);
+          }
+        }
+        else if (this.board[row][col] === this.playerToKing[player]) {
+          // this sqaure has a king. Treat it like royality
+          var moveSquares = this.kingCanMove(player, row, col);
+          if (moveSquares.length > 0) {
+            pieces.push([row, col]);
           }
         }
       }
@@ -196,7 +241,7 @@ var model = {
     var squares;
     var direction = player === red ? -1 : 1;
 
-    squares = this.pieceCanMove(direction,
+    squares = this.pieceCanMove(player,
       this.selectedPiece[0],
       this.selectedPiece[1]);
 
