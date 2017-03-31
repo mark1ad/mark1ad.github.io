@@ -32,6 +32,7 @@ var model = {
   selectedPiece: [],
   piecesLeft: {},
   wins: {},
+  playerToKing: {}, // This maps player to its king equivalent
 
   //***************************************
   // Set up data objects - used once after page first loads
@@ -50,6 +51,8 @@ var model = {
   // initialize - creates the array to store state of the board in
   initialize: function() {
     console.log('model.initialize()');
+    this.playerToKing[red] = redKing;
+    this.playerToKing[black] = blackKing;
     this.piecesLeft[red] = 12;
     this.piecesLeft[black] = 12;
     this.wins[red] = 0;
@@ -87,7 +90,7 @@ var model = {
     console.log('model.movePiece(' + row + ', ' + column + ')');
 
     var player = this.board[this.selectedPiece[0]][this.selectedPiece[1]];
-    var direction = player === red ? -1 : 1;
+    var direction = (row - this.selectedPiece[0]) / 2;
     var jumpedPiece = [];
 
     // remove from current position
@@ -98,13 +101,14 @@ var model = {
     // take care of a jumped piece
       var distanceMoved = Math.abs(this.selectedPiece[1] - column);
       if (distanceMoved === 2) {
-        var opponent = player === red ? black : red;
+        var opponent = ((player === red) || (player === this.playerToKing[red])) ? black : red;
         this.piecesLeft[opponent]--;
         // we've got a jumped
         if (column < this.selectedPiece[1]) {
           // jumped left remove from board
           jumpedPiece = [(this.selectedPiece[0] + direction),
             (this.selectedPiece[1] - 1)];
+          console.log(jumpedPiece);
           this.board[jumpedPiece[0]][jumpedPiece[1]] = blank;
         }
         else {
@@ -126,16 +130,16 @@ var model = {
 
   // pieceCanMove - returns an array of squares that piece can move to. array
   // is empty if there are no squares available
-  pieceCanMove: function(direction, row, column) {
-    console.log('pieceCanMove( ' + direction + ', ' + row + ', ' + column +')');
-    var newRow = row + direction;
+  pieceCanMove: function(player, row, column) {
+    console.log('pieceCanMove( ' + player + ', ' + row + ', ' + column +')');
+    var newRow = row + (player === red ? -1 : 1);
     var availableSquares = [];
     // var moveLeft = true;
     // var moveRight = true;
 
     if (newRow < 0 || newRow > 7) {
       // moving forward will take piece off the board
-      return false;
+      return [];
     }
 
     //check moving left
@@ -143,7 +147,7 @@ var model = {
     if (newCol >= 0) {
       // can move left
       if (this.board[newRow][newCol] === blank) {
-        // sqaure is empty
+        // square is empty
         availableSquares.push( [newRow, newCol]);
       }
     }
@@ -160,8 +164,114 @@ var model = {
     return availableSquares;
   },
 
+  kingCanMove: function(player, row, column) {
+    console.log('model.kingCanMove( ' + player +  ', ' + row + ', ' + column + ')');
+
+    var availableSquares = [];
+
+    if (this.board[row][column] !== this.playerToKing[player]) {
+      // this piece is not a king. do nothing.
+      return availableSquares;
+    }
+
+    // check moving forward
+    if (row > 0) {
+      // can move forward
+      // check left
+      if (column > 0 && this.board[row - 1][column - 1] === blank) {
+        // can move forward left
+        availableSquares.push( [row - 1, column -1]);
+      }
+      // check right
+      if (column < 7 && this.board[row - 1][column + 1] === blank) {
+        availableSquares.push( [row - 1, column + 1]);
+      }
+    }
+
+    // check moving backward
+    if (row < 7) {
+      // check moving right
+      if (column < 7 && this.board[row + 1][column + 1] === blank) {
+        // can move backward right
+        availableSquares.push( [row + 1, column + 1]);
+      }
+      // check moving left
+      if (column > 0 && this.board[row + 1][column - 1] === blank) {
+        availableSquares.push( [row + 1, column - 1]);
+      }
+    }
+
+    return availableSquares;
+  },
+
+  // returns an array of squares that a king can jump to
+  kingCanJump(player, row, column) {
+    console.log('model.kingCanJump(' + player + ', ' + row + ', ' + column + ')');
+
+    var availableSquares = [];
+
+    // check if king
+    if (this.board[row][column] !== this.playerToKing[player]) {
+      return [];
+    }
+
+    // check forward left
+    if (this.checkIfJump( player, row, column, -1, -1 )) {
+      availableSquares.push([row -2, column-2]);
+    }
+
+    // check forward right
+    if (this.checkIfJump( player, row, column, -1, 1)) {
+      availableSquares.push([row -2, column + 2]);
+    }
+
+    // check backward left
+    if (this.checkIfJump( player, row, column, 1, -1)) {
+      availableSquares.push([row + 2, column - 2]);
+    }
+
+    // check backward right
+    if (this.checkIfJump( player, row, column, 1, 1)) {
+      availableSquares.push([row + 2, column + 2]);
+    }
+
+    return availableSquares;
+  },
+
+  checkIfJump: function( player, row, column, vertDirection, horzDirection) {
+    console.log('model.checkIfJump( ' + player + ', ' + row + ', ' + column + ', ' + vertDirection + ', ' + horzDirection + ')');
+
+    var landingRow = row + 2 * vertDirection;
+    if (landingRow < 0 || landingRow > 7) {
+      // jumping would take os off the end of the board
+      return false;
+    }
+
+    var landingCol = column + 2 * horzDirection;
+    if (landingCol < 0 || landingCol > 7) {
+      // jumping would take us off the sides
+      return false;
+    }
+
+    if (this.board[landingRow][landingCol] !== blank) {
+      // landing sqaure is not blank
+      return false;
+    }
+
+    var jumpedPiece = this.board[row + vertDirection][column + horzDirection];
+    if (jumpedPiece === player
+        || jumpedPiece === this.playerToKing[player]
+        || jumpedPiece === blank) {
+      // we can't jump our own pieces
+      return false;
+    }
+
+    return true;
+
+  },
+
   // getValidPieces - returns an array of arrays. Inner arrays are the
-    // coordinates of pieces that can be moved. [col, row]
+  // coordinates of pieces that can be moved. [col, row]
   getValidPieces: function(player){
     // get direction pieces are moving. Red moves from 8 towards 0 so direction
     // is negative. Black is the opposite.
@@ -171,15 +281,23 @@ var model = {
 
     // check each row
     for (var row = 0; row < 8; row++) {
-      // check each sqaure in row
+      // check each square in row
       for (var col = 0; col < 8; col++ ) {
         // check if player is on this square
         if (this.board[row][col] === player) {
           // check if player can move
-          var moveSquares = this.pieceCanMove(direction, row, col);
+          var moveSquares = this.pieceCanMove(player, row, col);
           var jumpSquares = this.getJumpToSquares(player, row, col);
           if (moveSquares.length > 0 || jumpSquares.length > 0) {
             pieces.push( [row, col]);
+          }
+        }
+        else if (this.board[row][col] === this.playerToKing[player]) {
+          // this square has a king. Treat it like royality
+          var moveSquares = this.kingCanMove(player, row, col);
+          var jumpSquares = this.getJumpToSquares(player, row, col);
+          if (moveSquares.length > 0 || jumpSquares.length > 0) {
+            pieces.push([row, col]);
           }
         }
       }
@@ -196,11 +314,15 @@ var model = {
     var squares;
     var direction = player === red ? -1 : 1;
 
-    squares = this.pieceCanMove(direction,
+    squares = this.pieceCanMove(player,
       this.selectedPiece[0],
       this.selectedPiece[1]);
-
-    return squares;
+    // var allSquares = squares.concat( this.kingCanMove(player,
+    //     this.selectedPiece[0],
+    //     this.selectedPiece[1]));
+    var kingSquares = this.kingCanMove(player, this.selectedPiece[0], this.selectedPiece[1]);
+    var allSquares = squares.concat(kingSquares);
+    return allSquares;
   },
 
   // getJumpToSquares - Gets the squares that the selected piece can jump to.
@@ -209,7 +331,7 @@ var model = {
     console.log('model.getJumpToSquares(' + player + ', ' + row + ', ' + col + ')');
 
     var direction = player === red ? -1 : 1;
-    var squares = [];
+    var squares  = this.kingCanJump(player, row, col);
     var opponent = player === red ? black : red;
 
     if ((row + 2 * direction) > 7 || (row + 2 * direction) < 0) {
@@ -280,15 +402,27 @@ var model = {
   promoteToKing: function(player, row, column) {
     if (player === red && row === 0) {
       // king red piece
-      this.board[row][column] = redKing;
-      return true;
+      if (this.board[row][column] === player) {
+        // let's promote this guy
+        this.board[row][column] = redKing;
+        return true;
+      }
     }
-    else if (player === black && row === 7) {
+
+    if (player === black && row === 7) {
       // king black piece
-      this.board[row][column] = blackKing;
-      return true;
+      if (this.board[row][column] === black) {
+        // let's promote this guy
+        this.board[row][column] = blackKing;
+        return true;
+      }
     }
     return false;
+  },
+
+  getPieceType: function() {
+    console.log('getPieceType()');
+    return this.board[this.selectedPiece[0]][this.selectedPiece[1]];
   },
 
   //***********************************
@@ -473,11 +607,10 @@ var controller = {
   squareSelected: function(row, column) {
     console.log('>>>>>>> controller.squareSelected(' + row + ', ' + column + ')');
 
-
     // move piece in view
     var oldPosition = model.getSelectedPiece();
     view.removePiece( oldPosition[0], oldPosition[1]);
-    view.placePiece(this.currentPlayer, row, column);
+    view.placePiece(model.getPieceType(), row, column);
 
     // move piece in model
     var pieceJumped = model.movePiece(row, column);
@@ -485,7 +618,7 @@ var controller = {
     if (pieceJumped.length === 2) {
       // piece was jumped remove it from display
       view.removePiece(pieceJumped[0], pieceJumped[1]);
-      view.removePiece(pieceJumped[0], pieceJumped[1]);
+      // view.removePiece(pieceJumped[0], pieceJumped[1]);
     }
 
     var numPieces = model.getNumPieces();
@@ -681,6 +814,9 @@ var view = {
       $square.addClass('highlight');
     }
 
+    // doing king stuff was causing two of the same handler being assign.
+    // Remove just in case
+    $square.off('click', handler);
     // add handler
     $square.on('click', handler);
   },
