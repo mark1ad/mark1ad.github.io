@@ -101,7 +101,7 @@ var model = {
     // take care of a jumped piece
       var distanceMoved = Math.abs(this.selectedPiece[1] - column);
       if (distanceMoved === 2) {
-        var opponent = player === red ? black : red;
+        var opponent = ((player === red) || (player === this.playerToKing[red])) ? black : red;
         this.piecesLeft[opponent]--;
         // we've got a jumped
         if (column < this.selectedPiece[1]) {
