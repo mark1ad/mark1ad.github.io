@@ -203,6 +203,72 @@ var model = {
     return availableSquares;
   },
 
+  // returns an array of squares that a king can jump to
+  kingCanJump(player, row, column) {
+    console.log('model.kingCanJump(' + player + ', ' + row + ', ' + column + ')');
+
+    var availableSquares = [];
+
+    // check if king
+    if (this.board[row][column] !== this.playerToKing[player]) {
+      return [];
+    }
+
+    // check forward left
+    if (this.checkIfJump( player, row, column, -1, -1 )) {
+      availableSquares.push([row -2, column-2]);
+    }
+
+    // check forward right
+    if (this.checkIfJump( player, row, column, -1, 1)) {
+      availableSquares.push([row -2, column + 2]);
+    }
+
+    // check backward left
+    if (this.checkIfJump( player, row, column, 1, -1)) {
+      availableSquares.push([row + 2, column - 2]);
+    }
+
+    // check backward right
+    if (this.checkIfJump( player, row, column, 1, 1)) {
+      availableSquares.push([row + 2, column + 2]);
+    }
+
+    return availableSquares;
+  },
+
+  checkIfJump: function( player, row, column, vertDirection, horzDirection) {
+    console.log('model.checkIfJump( ' + player + ', ' + row + ', ' + column + ', ' + vertDirection + ', ' + horzDirection + ')');
+
+    var landingRow = row + 2 * vertDirection;
+    if (landingRow < 0 || landingRow > 7) {
+      // jumping would take os off the end of the board
+      return false;
+    }
+
+    var landingCol = column + 2 * horzDirection;
+    if (landingCol < 0 || landingCol > 7) {
+      // jumping would take us off the sides
+      return false;
+    }
+
+    if (this.board[landingRow][landingCol] !== blank) {
+      // landing sqaure is not blank
+      return false;
+    }
+
+    var jumpedPiece = this.board[row + vertDirection][column + horzDirection];
+    if (jumpedPiece === player
+        || jumpedPiece === this.playerToKing[player]
+        || jumpedPiece === blank) {
+      // we can't jump our own pieces
+      return false;
+    }
+
+    return true;
+
+  },
+
   // getValidPieces - returns an array of arrays. Inner arrays are the
   // coordinates of pieces that can be moved. [col, row]
   getValidPieces: function(player){
@@ -263,7 +329,7 @@ var model = {
     console.log('model.getJumpToSquares(' + player + ', ' + row + ', ' + col + ')');
 
     var direction = player === red ? -1 : 1;
-    var squares = [];
+    var squares  = this.kingCanJump(player, row, col);
     var opponent = player === red ? black : red;
 
     if ((row + 2 * direction) > 7 || (row + 2 * direction) < 0) {
@@ -343,7 +409,7 @@ var model = {
 
     if (player === black && row === 7) {
       // king black piece
-      if (this.board[row[column] === black]) {
+      if (this.board[row][column] === black) {
         // let's promote this guy
         this.board[row][column] = blackKing;
         return true;
