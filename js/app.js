@@ -90,7 +90,7 @@ var model = {
     console.log('model.movePiece(' + row + ', ' + column + ')');
 
     var player = this.board[this.selectedPiece[0]][this.selectedPiece[1]];
-    var direction = player === red ? -1 : 1;
+    var direction = (row - this.selectedPiece[0]) / 2;
     var jumpedPiece = [];
 
     // remove from current position
@@ -108,6 +108,7 @@ var model = {
           // jumped left remove from board
           jumpedPiece = [(this.selectedPiece[0] + direction),
             (this.selectedPiece[1] - 1)];
+          console.log(jumpedPiece);
           this.board[jumpedPiece[0]][jumpedPiece[1]] = blank;
         }
         else {
@@ -294,7 +295,8 @@ var model = {
         else if (this.board[row][col] === this.playerToKing[player]) {
           // this square has a king. Treat it like royality
           var moveSquares = this.kingCanMove(player, row, col);
-          if (moveSquares.length > 0) {
+          var jumpSquares = this.getJumpToSquares(player, row, col);
+          if (moveSquares.length > 0 || jumpSquares.length > 0) {
             pieces.push([row, col]);
           }
         }
